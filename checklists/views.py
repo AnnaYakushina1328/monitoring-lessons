@@ -278,13 +278,30 @@ def checklist_start(
             "этого посещения."
         )
 
+    # ОУП-шаблон, который сейчас реализован,
+    # предназначен только для очного занятия.
+    if visit.format != Visit.Format.IN_PERSON:
+        messages.error(
+            request,
+            (
+                "Для онлайн-занятия требуется отдельный "
+                "онлайн-чек-лист. Чек-лист ОУП предназначен "
+                "для очного занятия."
+            ),
+        )
+
+        return redirect(
+            "visits:detail",
+            pk=visit.pk,
+        )
+
     template = get_object_or_404(
         ChecklistTemplate,
         code="oup",
         is_active=True,
     )
 
-    assessment, _ = (
+    assessment, created = (
         Assessment.objects.get_or_create(
             visit=visit,
             defaults={
@@ -294,16 +311,150 @@ def checklist_start(
         )
     )
 
+    # Защита от ситуации, когда к посещению уже
+    # привязан другой тип чек-листа.
+    if (
+        not created
+        and assessment.template_id != template.id
+    ):
+        messages.error(
+            request,
+            (
+                "К этому посещению уже привязан "
+                "другой шаблон чек-листа."
+            ),
+        )
+
+        return redirect(
+            "visits:detail",
+            pk=visit.pk,
+        )
+
     first_section = (
         template.sections
         .order_by("order")
         .first()
     )
 
+    if first_section is None:
+        messages.error(
+            request,
+            "В шаблоне чек-листа отсутствуют блоки.",
+        )
+
+        return redirect(
+            "visits:detail",
+            pk=visit.pk,
+        )
+
     return redirect(
         "checklists:section",
         visit_id=visit.pk,
         section_order=first_section.order,
+    )
+
+
+@login_required
+def assessment_result(
+    request,
+    visit_id,
+):
+    visit = get_object_or_404(
+        Visit.objects.select_related(
+            "teacher"
+        ).prefetch_related(
+            "auditors"
+        ),
+        pk=visit_id,
+    )
+
+    assessment = get_object_or_404(
+        Assessment.objects.select_related(
+            "template"
+        ),
+        visit=visit,
+    )
+
+    answers = {
+        answer.criterion_id: answer
+        for answer in assessment.answers.select_related(
+            "teacher_option",
+            "student_option",
+        )
+    }
+
+    sections = list(
+        assessment.template.sections
+        .order_by("order")
+        .prefetch_related(
+            "criteria__options"
+        )
+    )
+
+    for section in sections:
+        section_score = 0
+        section_max = 0
+
+        criteria = list(
+            section.criteria.all()
+        )
+
+        for criterion in criteria:
+            answer = answers.get(
+                criterion.pk
+            )
+
+            criterion.current_answer = answer
+
+            score = 0
+
+            if answer:
+                if answer.teacher_option:
+                    score += (
+                        answer.teacher_option.score
+                    )
+
+                if answer.student_option:
+                    score += (
+                        answer.student_option.score
+                    )
+
+            criterion.answer_score = score
+            criterion.max_possible_score = (
+                criterion.max_score
+            )
+
+            section_score += score
+            section_max += criterion.max_score
+
+        section.result_score = section_score
+        section.result_max = section_max
+        section.result_criteria = criteria
+
+    template_mismatch = (
+        visit.format
+        != Visit.Format.IN_PERSON
+        and assessment.template.code == "oup"
+    )
+
+    context = {
+        "visit": visit,
+        "assessment": assessment,
+        "sections": sections,
+        "template_mismatch": template_mismatch,
+        "can_edit": (
+            can_edit_visit(
+                request.user,
+                visit,
+            )
+            and not template_mismatch
+        ),
+    }
+
+    return render(
+        request,
+        "checklists/result.html",
+        context,
     )
 
 

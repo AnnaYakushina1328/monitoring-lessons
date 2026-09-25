@@ -2,9 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ visit.teacher.full_name }} · Посещение</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ visit.teacher.full_name }} · Посещение
+    </title>
 
     <style>
         * {
@@ -92,11 +98,12 @@
         .score {
             font-size: 38px;
             font-weight: 800;
-            margin: 12px 0 4px;
+            margin: 18px 0 5px;
         }
 
         .level {
             color: #667085;
+            line-height: 1.5;
             margin-bottom: 20px;
         }
 
@@ -110,13 +117,41 @@
 
         .button {
             display: inline-block;
-            margin-top: 22px;
+            margin-top: 18px;
             background: #1f2937;
             color: white;
             padding: 12px 17px;
             border-radius: 9px;
             text-decoration: none;
             font-weight: 700;
+        }
+
+        .warning {
+            margin-bottom: 25px;
+            padding: 15px 17px;
+            border: 1px solid #fecdca;
+            border-radius: 11px;
+            background: #fef3f2;
+            color: #b42318;
+            line-height: 1.5;
+        }
+
+        .info {
+            padding: 15px 17px;
+            border-radius: 11px;
+            background: #f2f4f7;
+            color: #475467;
+            line-height: 1.55;
+            margin-top: 16px;
+        }
+
+        .invalid-result {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff4e5;
+            color: #93370d;
+            line-height: 1.5;
         }
 
         @media (max-width: 800px) {
@@ -127,6 +162,10 @@
             .data {
                 grid-template-columns: 1fr;
             }
+
+            h1 {
+                font-size: 29px;
+            }
         }
     </style>
 </head>
@@ -134,20 +173,46 @@
 <body>
 
 <header>
+
     <div class="header-inner">
-        <a class="brand" href="/">
+
+        <a
+            class="brand"
+            href="/"
+        >
             Мониторинг учебных занятий
         </a>
+
     </div>
+
 </header>
 
 <main>
 
-    <a class="back" href="/visits/">
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="warning">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <a
+        class="back"
+        href="{% url 'visits:list' %}"
+    >
         ← Все посещения
     </a>
 
-    <h1>{{ visit.teacher.full_name }}</h1>
+
+    <h1>
+        {{ visit.teacher.full_name }}
+    </h1>
 
     <div class="subtitle">
         {{ visit.date|date:"d.m.Y" }}
@@ -155,58 +220,99 @@
         {{ visit.subject }}
     </div>
 
+
     <div class="grid">
 
         <div class="card">
 
             <div class="data">
 
-                <div class="label">Преподаватель</div>
+                <div class="label">
+                    Преподаватель
+                </div>
+
                 <div class="value">
                     {{ visit.teacher.full_name }}
                 </div>
 
-                <div class="label">Дата</div>
+
+                <div class="label">
+                    Дата
+                </div>
+
                 <div class="value">
                     {{ visit.date|date:"d.m.Y" }}
                 </div>
 
-                <div class="label">Занятие</div>
+
+                <div class="label">
+                    Занятие
+                </div>
+
                 <div class="value">
                     {{ visit.lesson_number|default:"—" }}
                 </div>
 
-                <div class="label">Дисциплина</div>
+
+                <div class="label">
+                    Дисциплина
+                </div>
+
                 <div class="value">
                     {{ visit.subject }}
                 </div>
 
-                <div class="label">Группа</div>
+
+                <div class="label">
+                    Группа
+                </div>
+
                 <div class="value">
                     {{ visit.group|default:"—" }}
                 </div>
 
-                <div class="label">Аудитория</div>
+
+                <div class="label">
+                    Аудитория
+                </div>
+
                 <div class="value">
                     {{ visit.room|default:"—" }}
                 </div>
 
-                <div class="label">Тема</div>
+
+                <div class="label">
+                    Тема
+                </div>
+
                 <div class="value">
                     {{ visit.topic|default:"—" }}
                 </div>
 
-                <div class="label">Формат</div>
+
+                <div class="label">
+                    Формат
+                </div>
+
                 <div class="value">
                     {{ visit.get_format_display }}
                 </div>
 
-                <div class="label">Эксперты</div>
+
+                <div class="label">
+                    Эксперты
+                </div>
+
                 <div class="value">
 
                     {% for auditor in visit.auditors.all %}
+
                         {{ auditor }}
-                        {% if not forloop.last %}, {% endif %}
+
+                        {% if not forloop.last %}
+                            ,
+                        {% endif %}
+
                     {% empty %}
                         —
                     {% endfor %}
@@ -217,13 +323,54 @@
 
         </div>
 
+
         <div class="card">
 
-            <h2 style="margin-top:0">
-                Чек-лист ОУП
+            <h2 style="margin-top:0;">
+                Оценивание занятия
             </h2>
 
-            {% if assessment %}
+
+            {% if assessment_mismatch %}
+
+                <div class="warning">
+                    Для этого онлайн-занятия ранее был
+                    создан офлайн-чек-лист ОУП.
+                    Такой результат методически
+                    некорректен и не должен использоваться.
+                </div>
+
+                <div class="invalid-result">
+                    Сохранённый тестовый результат:
+                    <strong>
+                        {{ assessment.total_score }}
+                        /
+                        {{ assessment.template.max_score }}
+                    </strong>
+                </div>
+
+                <div class="info">
+                    Для онлайн-занятий будет подключён
+                    отдельный онлайн-шаблон чек-листа.
+                </div>
+
+
+            {% elif not checklist_available %}
+
+                <div class="status">
+                    Онлайн
+                </div>
+
+                <div class="info">
+                    Для онлайн-занятия требуется
+                    отдельный онлайн-чек-лист.
+
+                    Текущий чек-лист ОУП предназначен
+                    только для очных занятий.
+                </div>
+
+
+            {% elif assessment %}
 
                 <div class="status">
                     {{ assessment.get_status_display }}
@@ -236,31 +383,58 @@
                 </div>
 
                 <div class="level">
+
                     {% if assessment.status == "completed" and assessment.level %}
+
                         {{ assessment.level.name }}
+
                     {% else %}
+
                         Текущий результат
+
                     {% endif %}
+
                 </div>
 
-                <a
-                    class="button"
-                    href="/checklists/visit/{{ visit.id }}/start/"
-                >
-                    Продолжить заполнение
-                </a>
+
+                {% if assessment.status == "completed" %}
+
+                    <a
+                        class="button"
+                        href="{% url 'checklists:result' visit.id %}"
+                    >
+                        Посмотреть результат
+                    </a>
+
+                {% else %}
+
+                    <a
+                        class="button"
+                        href="{% url 'checklists:start' visit.id %}"
+                    >
+                        Продолжить заполнение
+                    </a>
+
+                {% endif %}
+
 
             {% else %}
 
-                <p style="color:#667085; line-height:1.5;">
-                    Оценивание по чек-листу ещё не начато.
+                <p
+                    style="
+                        color:#667085;
+                        line-height:1.5;
+                    "
+                >
+                    Оценивание по чек-листу
+                    ещё не начато.
                 </p>
 
                 <a
                     class="button"
-                    href="/checklists/visit/{{ visit.id }}/start/"
+                    href="{% url 'checklists:start' visit.id %}"
                 >
-                    Начать чек-лист
+                    Начать чек-лист ОУП
                 </a>
 
             {% endif %}

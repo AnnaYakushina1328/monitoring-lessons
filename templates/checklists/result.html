@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Результат · {{ visit.teacher.full_name }}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7fa;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-inner,
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .header-inner {
+            padding-top: 17px;
+            padding-bottom: 17px;
+        }
+
+        .brand {
+            font-weight: 700;
+            text-decoration: none;
+            color: #111827;
+        }
+
+        main {
+            padding-top: 36px;
+            padding-bottom: 70px;
+        }
+
+        .back {
+            text-decoration: none;
+            color: #667085;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 30px;
+            margin: 28px 0 34px;
+        }
+
+        h1 {
+            margin: 0 0 7px;
+            font-size: 32px;
+        }
+
+        .meta {
+            color: #667085;
+        }
+
+        .total {
+            text-align: right;
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: 800;
+        }
+
+        .level {
+            margin-top: 5px;
+            color: #667085;
+        }
+
+        .section {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 18px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .section-score {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .criterion {
+            padding: 17px 0;
+            border-top: 1px solid #eaecf0;
+        }
+
+        .criterion:first-of-type {
+            border-top: 0;
+        }
+
+        .criterion-title {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .criterion-score {
+            white-space: nowrap;
+        }
+
+        .answer {
+            color: #475467;
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .answer strong {
+            color: #1f2937;
+        }
+
+        .comment {
+            margin-top: 9px;
+            padding: 10px 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            color: #475467;
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 9px;
+            background: #1f2937;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .secondary {
+            background: #fff;
+            color: #344054;
+            border: 1px solid #d0d5dd;
+        }
+
+        .warning {
+            margin: 22px 0;
+            padding: 15px 17px;
+            background: #fef3f2;
+            color: #b42318;
+            border: 1px solid #fecdca;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 700px) {
+            .hero {
+                display: block;
+            }
+
+            .total {
+                text-align: left;
+                margin-top: 20px;
+            }
+
+            .criterion-title {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            class="brand"
+            href="/"
+        >
+            Мониторинг учебных занятий
+        </a>
+
+    </div>
+
+</header>
+
+<main>
+
+    <a
+        class="back"
+        href="{% url 'visits:detail' visit.id %}"
+    >
+        ← Карточка посещения
+    </a>
+
+
+    {% if template_mismatch %}
+
+        <div class="warning">
+            Этот результат создан по офлайн-чек-листу ОУП,
+            хотя занятие имеет формат «Онлайн».
+
+            Результат сохранён в базе для прозрачности,
+            но не должен использоваться как итог мониторинга.
+        </div>
+
+    {% endif %}
+
+
+    <div class="hero">
+
+        <div>
+
+            <h1>
+                {{ visit.teacher.full_name }}
+            </h1>
+
+            <div class="meta">
+                {{ visit.date|date:"d.m.Y" }}
+                ·
+                {{ visit.subject }}
+                ·
+                {{ visit.get_format_display }}
+            </div>
+
+        </div>
+
+
+        <div class="total">
+
+            <div class="score">
+                {{ assessment.total_score }}
+                /
+                {{ assessment.template.max_score }}
+            </div>
+
+            <div class="level">
+
+                {% if assessment.level %}
+                    {{ assessment.level.name }}
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% for section in sections %}
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h2>
+                    {{ section.order }}.
+                    {{ section.title }}
+                </h2>
+
+                <div class="section-score">
+                    {{ section.result_score }}
+                    /
+                    {{ section.result_max }}
+                </div>
+
+            </div>
+
+
+            {% for criterion in section.result_criteria %}
+
+                <div class="criterion">
+
+                    <div class="criterion-title">
+
+                        <span>
+                            {{ criterion.title }}
+                        </span>
+
+                        <span class="criterion-score">
+                            {{ criterion.answer_score }}
+                            /
+                            {{ criterion.max_possible_score }}
+                        </span>
+
+                    </div>
+
+
+                    {% if criterion.current_answer.teacher_option %}
+
+                        <div class="answer">
+
+                            <strong>
+                                Преподаватель:
+                            </strong>
+
+                            {{ criterion.current_answer.teacher_option.text }}
+
+                            —
+                            {{ criterion.current_answer.teacher_option.score }}
+                            балл.
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if criterion.current_answer.student_option %}
+
+                        <div class="answer">
+
+                            <strong>
+                                Студент:
+                            </strong>
+
+                            {{ criterion.current_answer.student_option.text }}
+
+                            —
+                            {{ criterion.current_answer.student_option.score }}
+                            балл.
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if criterion.current_answer.comment %}
+
+                        <div class="comment">
+                            {{ criterion.current_answer.comment }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endfor %}
+
+
+    <div class="actions">
+
+        <a
+            class="button secondary"
+            href="{% url 'visits:detail' visit.id %}"
+        >
+            Назад
+        </a>
+
+
+        {% if can_edit %}
+
+            <a
+                class="button"
+                href="{% url 'checklists:start' visit.id %}"
+            >
+                Изменить оценивание
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

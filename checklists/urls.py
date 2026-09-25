@@ -1,6 +1,7 @@
 ﻿from django.urls import path
 
 from .views import (
+    assessment_result,
     checklist_section,
     checklist_start,
 )
@@ -14,6 +15,12 @@ urlpatterns = [
         "visit/<int:visit_id>/start/",
         checklist_start,
         name="start",
+    ),
+
+    path(
+        "visit/<int:visit_id>/result/",
+        assessment_result,
+        name="result",
     ),
 
     path(
