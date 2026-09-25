@@ -1,9 +1,11 @@
-﻿from django.db.models import Q
+﻿from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render
 
 from .models import Teacher
 
 
+@login_required
 def teacher_list(request):
     query = request.GET.get("q", "").strip()
 

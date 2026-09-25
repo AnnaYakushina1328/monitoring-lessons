@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход · Мониторинг учебных занятий</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f7fa;
+            font-family: Arial, sans-serif;
+            color: #1f2937;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            padding: 38px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 12px 40px rgba(0,0,0,.06);
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .subtitle {
+            margin: 0 0 28px;
+            color: #667085;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 7px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            border: 1px solid #d0d5dd;
+            border-radius: 10px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 13px;
+            border: 0;
+            border-radius: 10px;
+            background: #1f2937;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .error {
+            background: #fef3f2;
+            color: #b42318;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-card">
+
+    <h1>Мониторинг учебных занятий</h1>
+
+    <p class="subtitle">
+        Войдите в систему под своей учётной записью.
+    </p>
+
+    {% if form.errors %}
+        <div class="error">
+            Неверный логин или пароль.
+        </div>
+    {% endif %}
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <label for="{{ form.username.id_for_label }}">
+            Логин
+        </label>
+
+        {{ form.username }}
+
+        <label for="{{ form.password.id_for_label }}">
+            Пароль
+        </label>
+
+        {{ form.password }}
+
+        <button type="submit">
+            Войти
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
