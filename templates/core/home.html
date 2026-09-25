@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мониторинг учебных занятий</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .pilot {
+            font-size: 13px;
+            background: #eef4ff;
+            padding: 7px 12px;
+            border-radius: 20px;
+        }
+
+        main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 72px 28px;
+        }
+
+        h1 {
+            font-size: 42px;
+            line-height: 1.1;
+            margin: 0 0 16px;
+        }
+
+        .lead {
+            max-width: 720px;
+            color: #667085;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 44px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            min-height: 160px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+        }
+
+        .card p {
+            color: #667085;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475467;
+            background: #f2f4f7;
+            border-radius: 6px;
+            padding: 5px 8px;
+        }
+
+        @media (max-width: 800px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="header-inner">
+        <div class="brand">Мониторинг учебных занятий</div>
+        <div class="pilot">Пилот · общеобразовательные дисциплины</div>
+    </div>
+</header>
+
+<main>
+    <h1>Мониторинг учебных занятий</h1>
+
+    <p class="lead">
+        Система планирования посещений, заполнения чек-листов
+        и анализа результатов педагогических работников.
+    </p>
+
+    <div class="cards">
+        <div class="card">
+            <h2>Преподаватели</h2>
+            <p>
+                Справочник преподавателей и история результатов мониторинга.
+            </p>
+            <span class="status">следующий этап</span>
+        </div>
+
+        <div class="card">
+            <h2>Посещения</h2>
+            <p>
+                Планирование и проведение посещений учебных занятий.
+            </p>
+            <span class="status">следующий этап</span>
+        </div>
+
+        <div class="card">
+            <h2>Чек-лист ОУП</h2>
+            <p>
+                Электронная оценка общеобразовательного занятия
+                с автоматическим расчётом результата.
+            </p>
+            <span class="status">пилот</span>
+        </div>
+    </div>
+</main>
+</body>
+</html>
