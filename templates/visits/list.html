@@ -2,7 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Посещения</title>
 
@@ -28,6 +32,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
             margin-bottom: 26px;
         }
 
@@ -42,6 +47,7 @@
             padding: 11px 16px;
             border-radius: 9px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .table-wrapper {
@@ -77,6 +83,34 @@
             font-weight: 600;
         }
 
+        .visit-row {
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .visit-row:hover {
+            background: #f9fafb;
+        }
+
+        .open-link {
+            color: #344054;
+            text-decoration: none;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .open-link:hover {
+            text-decoration: underline;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 7px;
+            background: #f2f4f7;
+            white-space: nowrap;
+        }
+
         .empty {
             padding: 45px;
             text-align: center;
@@ -89,6 +123,16 @@
             color: #667085;
             text-decoration: none;
         }
+
+        @media (max-width: 850px) {
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 900px;
+            }
+        }
     </style>
 </head>
 
@@ -96,15 +140,23 @@
 
 <main>
 
-    <a class="back" href="/">
+    <a
+        class="back"
+        href="/"
+    >
         ← На главную
     </a>
 
     <div class="title-row">
 
-        <h1>Посещения</h1>
+        <h1>
+            Посещения
+        </h1>
 
-        <a class="button" href="/visits/new/">
+        <a
+            class="button"
+            href="{% url 'visits:create' %}"
+        >
             + Новое посещение
         </a>
 
@@ -114,71 +166,99 @@
 
         {% if visits %}
 
-        <table>
+            <table>
 
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Занятие</th>
-                    <th>Преподаватель</th>
-                    <th>Дисциплина</th>
-                    <th>Группа</th>
-                    <th>Эксперты</th>
-                    <th>Статус</th>
-                </tr>
-            </thead>
+                <thead>
 
-            <tbody>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Занятие</th>
+                        <th>Преподаватель</th>
+                        <th>Дисциплина</th>
+                        <th>Группа</th>
+                        <th>Эксперты</th>
+                        <th>Статус</th>
+                        <th></th>
+                    </tr>
 
-            {% for visit in visits %}
+                </thead>
 
-                <tr>
+                <tbody>
 
-                    <td>
-                        {{ visit.date|date:"d.m.Y" }}
-                    </td>
+                    {% for visit in visits %}
 
-                    <td>
-                        {{ visit.lesson_number|default:"—" }}
-                    </td>
+                        <tr
+                            class="visit-row"
+                            onclick="window.location.href='{% url 'visits:detail' visit.id %}'"
+                        >
 
-                    <td class="teacher">
-                        {{ visit.teacher.full_name }}
-                    </td>
+                            <td>
+                                {{ visit.date|date:"d.m.Y" }}
+                            </td>
 
-                    <td>
-                        {{ visit.subject }}
-                    </td>
+                            <td>
+                                {{ visit.lesson_number|default:"—" }}
+                            </td>
 
-                    <td>
-                        {{ visit.group|default:"—" }}
-                    </td>
+                            <td class="teacher">
+                                {{ visit.teacher.full_name }}
+                            </td>
 
-                    <td>
-                        {% for auditor in visit.auditors.all %}
-                            {{ auditor }}{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                            —
-                        {% endfor %}
-                    </td>
+                            <td>
+                                {{ visit.subject }}
+                            </td>
 
-                    <td>
-                        {{ visit.get_status_display }}
-                    </td>
+                            <td>
+                                {{ visit.group|default:"—" }}
+                            </td>
 
-                </tr>
+                            <td>
 
-            {% endfor %}
+                                {% for auditor in visit.auditors.all %}
 
-            </tbody>
+                                    {{ auditor }}
 
-        </table>
+                                    {% if not forloop.last %}
+                                        ,
+                                    {% endif %}
+
+                                {% empty %}
+                                    —
+                                {% endfor %}
+
+                            </td>
+
+                            <td>
+                                <span class="status">
+                                    {{ visit.get_status_display }}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="open-link"
+                                    href="{% url 'visits:detail' visit.id %}"
+                                    onclick="event.stopPropagation();"
+                                >
+                                    Открыть →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
 
         {% else %}
 
-        <div class="empty">
-            Посещений пока нет.
-        </div>
+            <div class="empty">
+                Посещений пока нет.
+            </div>
 
         {% endif %}
 

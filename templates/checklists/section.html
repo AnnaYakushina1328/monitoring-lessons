@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ section.title }} · Чек-лист ОУП
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 14px 24px;
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            font-weight: 700;
+        }
+
+        .score {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .progress {
+            height: 6px;
+            margin-top: 12px;
+            background: #eaecf0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #344054;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 35px 24px 100px;
+        }
+
+        .back {
+            color: #667085;
+            text-decoration: none;
+        }
+
+        .section-meta {
+            margin-top: 28px;
+            color: #667085;
+            font-size: 14px;
+        }
+
+        h1 {
+            margin: 7px 0 8px;
+            font-size: 32px;
+        }
+
+        .filled {
+            color: #667085;
+            margin-bottom: 30px;
+        }
+
+        .criterion {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+
+        .criterion h2 {
+            margin: 0 0 20px;
+            font-size: 19px;
+            line-height: 1.4;
+        }
+
+        .side-title {
+            margin: 22px 0 10px;
+            color: #475467;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .option {
+            display: block;
+            position: relative;
+            margin: 9px 0;
+            cursor: pointer;
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option-content {
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            gap: 12px;
+            padding: 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 11px;
+            transition: .15s;
+        }
+
+        .option:hover .option-content {
+            border-color: #98a2b3;
+        }
+
+        .option input:checked + .option-content {
+            border-color: #344054;
+            background: #f2f4f7;
+            box-shadow: 0 0 0 1px #344054;
+        }
+
+        .points {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            border-radius: 8px;
+            background: #eaecf0;
+            font-weight: 800;
+        }
+
+        .option-text {
+            line-height: 1.45;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 85px;
+            padding: 12px;
+            resize: vertical;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .hint {
+            margin: 8px 0;
+            color: #667085;
+            font-size: 13px;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            background: #fef3f2;
+            color: #b42318;
+            padding: 13px 15px;
+            border-radius: 9px;
+        }
+
+        .actions {
+            position: sticky;
+            bottom: 0;
+            background: rgba(245,247,250,.96);
+            border-top: 1px solid #e5e7eb;
+            padding: 15px 0;
+            margin-top: 25px;
+        }
+
+        .actions-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 17px;
+            border: 0;
+            border-radius: 9px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .secondary {
+            background: white;
+            color: #344054;
+            border: 1px solid #d0d5dd;
+        }
+
+        .primary {
+            background: #1f2937;
+            color: white;
+        }
+
+        .finish {
+            background: #166534;
+            color: white;
+        }
+
+        @media (max-width: 650px) {
+            .option-content {
+                grid-template-columns: 36px 1fr;
+            }
+
+            .actions-inner {
+                flex-wrap: wrap;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="top-row">
+
+            <div class="brand">
+                {{ visit.teacher.full_name }}
+            </div>
+
+            <div class="score">
+                {{ assessment.total_score }}
+                /
+                {{ assessment.template.max_score }}
+            </div>
+
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                style="width: {{ progress_percent }}%;"
+            ></div>
+        </div>
+
+    </div>
+
+</header>
+
+<main>
+
+    <a
+        class="back"
+        href="{% url 'visits:detail' visit.id %}"
+    >
+        ← Карточка посещения
+    </a>
+
+    <div class="section-meta">
+        Блок {{ section_number }} из {{ section_count }}
+    </div>
+
+    <h1>
+        {{ section.title }}
+    </h1>
+
+    <div class="filled">
+        Заполнено критериев:
+        {{ completed }} из {{ total }}
+    </div>
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {% for criterion in criteria %}
+
+            <div class="criterion">
+
+                <h2>
+                    {{ criterion.title }}
+                </h2>
+
+
+                {% if criterion.teacher_options %}
+
+                    <div class="side-title">
+                        Деятельность преподавателя
+                    </div>
+
+                    {% for option in criterion.teacher_options %}
+
+                        <label class="option">
+
+                            <input
+                                type="radio"
+                                name="teacher_{{ criterion.id }}"
+                                value="{{ option.id }}"
+
+                                {% if criterion.current_answer.teacher_option_id == option.id %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <span class="option-content">
+
+                                <span class="points">
+                                    {{ option.score }}
+                                </span>
+
+                                <span class="option-text">
+                                    {{ option.text }}
+                                </span>
+
+                            </span>
+
+                        </label>
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                {% if criterion.student_options %}
+
+                    <div class="side-title">
+                        Деятельность студента
+                    </div>
+
+                    {% for option in criterion.student_options %}
+
+                        <label class="option">
+
+                            <input
+                                type="radio"
+                                name="student_{{ criterion.id }}"
+                                value="{{ option.id }}"
+
+                                {% if criterion.current_answer.student_option_id == option.id %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <span class="option-content">
+
+                                <span class="points">
+                                    {{ option.score }}
+                                </span>
+
+                                <span class="option-text">
+                                    {{ option.text }}
+                                </span>
+
+                            </span>
+
+                        </label>
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                {% if criterion.comment_hint %}
+
+                    <div class="side-title">
+                        Комментарий эксперта
+                    </div>
+
+                    <div class="hint">
+                        {{ criterion.comment_hint }}
+                    </div>
+
+                    <textarea
+                        name="comment_{{ criterion.id }}"
+                        placeholder="Комментарий..."
+                    >{% if criterion.current_answer %}{{ criterion.current_answer.comment }}{% endif %}</textarea>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+
+        <div class="actions">
+
+            <div class="actions-inner">
+
+                <div>
+
+                    {% if previous_order %}
+
+                        <button
+                            class="secondary"
+                            name="action"
+                            value="previous"
+                        >
+                            ← Назад
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    <button
+                        class="secondary"
+                        name="action"
+                        value="save"
+                    >
+                        Сохранить
+                    </button>
+
+                    {% if next_order %}
+
+                        <button
+                            class="primary"
+                            name="action"
+                            value="next"
+                        >
+                            Сохранить и далее →
+                        </button>
+
+                    {% else %}
+
+                        <button
+                            class="finish"
+                            name="action"
+                            value="finish"
+                        >
+                            Завершить чек-лист
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ visit.teacher.full_name }} · Посещение</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7fa;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-inner,
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-left: 28px;
+            padding-right: 28px;
+        }
+
+        .header-inner {
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .brand {
+            color: #111827;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        main {
+            padding-top: 42px;
+            padding-bottom: 60px;
+        }
+
+        .back {
+            color: #667085;
+            text-decoration: none;
+        }
+
+        h1 {
+            margin: 18px 0 6px;
+            font-size: 34px;
+        }
+
+        .subtitle {
+            color: #667085;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .data {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 15px 20px;
+        }
+
+        .label {
+            color: #667085;
+        }
+
+        .value {
+            font-weight: 600;
+        }
+
+        .score {
+            font-size: 38px;
+            font-weight: 800;
+            margin: 12px 0 4px;
+        }
+
+        .level {
+            color: #667085;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #f2f4f7;
+            border-radius: 8px;
+            padding: 6px 9px;
+            font-size: 13px;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 22px;
+            background: #1f2937;
+            color: white;
+            padding: 12px 17px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <a class="brand" href="/">
+            Мониторинг учебных занятий
+        </a>
+    </div>
+</header>
+
+<main>
+
+    <a class="back" href="/visits/">
+        ← Все посещения
+    </a>
+
+    <h1>{{ visit.teacher.full_name }}</h1>
+
+    <div class="subtitle">
+        {{ visit.date|date:"d.m.Y" }}
+        ·
+        {{ visit.subject }}
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+
+            <div class="data">
+
+                <div class="label">Преподаватель</div>
+                <div class="value">
+                    {{ visit.teacher.full_name }}
+                </div>
+
+                <div class="label">Дата</div>
+                <div class="value">
+                    {{ visit.date|date:"d.m.Y" }}
+                </div>
+
+                <div class="label">Занятие</div>
+                <div class="value">
+                    {{ visit.lesson_number|default:"—" }}
+                </div>
+
+                <div class="label">Дисциплина</div>
+                <div class="value">
+                    {{ visit.subject }}
+                </div>
+
+                <div class="label">Группа</div>
+                <div class="value">
+                    {{ visit.group|default:"—" }}
+                </div>
+
+                <div class="label">Аудитория</div>
+                <div class="value">
+                    {{ visit.room|default:"—" }}
+                </div>
+
+                <div class="label">Тема</div>
+                <div class="value">
+                    {{ visit.topic|default:"—" }}
+                </div>
+
+                <div class="label">Формат</div>
+                <div class="value">
+                    {{ visit.get_format_display }}
+                </div>
+
+                <div class="label">Эксперты</div>
+                <div class="value">
+
+                    {% for auditor in visit.auditors.all %}
+                        {{ auditor }}
+                        {% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        —
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2 style="margin-top:0">
+                Чек-лист ОУП
+            </h2>
+
+            {% if assessment %}
+
+                <div class="status">
+                    {{ assessment.get_status_display }}
+                </div>
+
+                <div class="score">
+                    {{ assessment.total_score }}
+                    /
+                    {{ assessment.template.max_score }}
+                </div>
+
+                <div class="level">
+                    {% if assessment.status == "completed" and assessment.level %}
+                        {{ assessment.level.name }}
+                    {% else %}
+                        Текущий результат
+                    {% endif %}
+                </div>
+
+                <a
+                    class="button"
+                    href="/checklists/visit/{{ visit.id }}/start/"
+                >
+                    Продолжить заполнение
+                </a>
+
+            {% else %}
+
+                <p style="color:#667085; line-height:1.5;">
+                    Оценивание по чек-листу ещё не начато.
+                </p>
+
+                <a
+                    class="button"
+                    href="/checklists/visit/{{ visit.id }}/start/"
+                >
+                    Начать чек-лист
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>
