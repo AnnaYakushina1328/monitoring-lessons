@@ -1,0 +1,141 @@
+﻿{% extends "base.html" %}
+
+
+{% block title %}
+    Редактирование посещения
+{% endblock %}
+
+
+{% block content %}
+
+<main class="page">
+
+
+    <div class="page-toolbar">
+
+        <a
+            class="page-back"
+            href="{% url 'visits:detail' visit.id %}"
+        >
+            ← Карточка посещения
+        </a>
+
+    </div>
+
+
+
+    <div class="page-title-row">
+
+        <div class="page-title">
+
+            <h1>
+                Редактирование посещения
+            </h1>
+
+            <p>
+                {{ visit.teacher.full_name }}
+                ·
+                {{ visit.date|date:"d.m.Y" }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <form
+        method="post"
+        class="form-card"
+    >
+
+        {% csrf_token %}
+
+
+        {% if form.non_field_errors %}
+
+            <div class="notice notice-warning">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+
+        <div class="form-grid">
+
+            {% for field in form %}
+
+                <div
+                    class="
+                        form-field
+
+                        {% if field.name == 'topic' or field.name == 'purpose' or field.name == 'auditors' or field.name == 'notes' %}
+                            full
+                        {% endif %}
+                    "
+                >
+
+                    <label
+                        for="{{ field.id_for_label }}"
+                    >
+                        {{ field.label }}
+                    </label>
+
+
+                    {{ field }}
+
+
+                    {% if field.help_text %}
+
+                        <div class="form-help">
+                            {{ field.help_text }}
+                        </div>
+
+                    {% endif %}
+
+
+                    {% for error in field.errors %}
+
+                        <div class="form-error">
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+
+        <div class="form-actions">
+
+            <a
+                class="button button-secondary"
+                href="{% url 'visits:detail' visit.id %}"
+            >
+                Отмена
+            </a>
+
+
+            <button
+                class="button"
+                type="submit"
+            >
+                Сохранить изменения
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+</main>
+
+{% endblock %}

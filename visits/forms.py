@@ -80,3 +80,32 @@ class VisitForm(forms.ModelForm):
                 "username",
             )
         )
+
+
+    def clean_format(self):
+        new_format = self.cleaned_data[
+            "format"
+        ]
+
+        if not self.instance.pk:
+            return new_format
+
+        try:
+            self.instance.assessment
+            has_assessment = True
+
+        except Exception:
+            has_assessment = False
+
+        if (
+            has_assessment
+            and new_format
+            != self.instance.format
+        ):
+            raise forms.ValidationError(
+                "Формат нельзя изменить после начала "
+                "заполнения чек-листа. "
+                "Он определяет тип оценивания."
+            )
+
+        return new_format

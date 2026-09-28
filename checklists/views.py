@@ -331,6 +331,17 @@ def checklist_start(
             "этого чек-листа."
         )
 
+    if visit.status == Visit.Status.CANCELLED:
+        messages.error(
+            request,
+            "Отменённое посещение нельзя оценивать.",
+        )
+
+        return redirect(
+            "visits:detail",
+            pk=visit.pk,
+        )
+
     template_code = (
         "online"
         if visit.format == Visit.Format.ONLINE

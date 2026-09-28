@@ -1,0 +1,108 @@
+﻿{% extends "base.html" %}
+
+
+{% block title %}
+    Отмена посещения
+{% endblock %}
+
+
+{% block content %}
+
+<main class="page">
+
+
+    <div class="page-toolbar">
+
+        <a
+            class="page-back"
+            href="{% url 'visits:detail' visit.id %}"
+        >
+            ← Карточка посещения
+        </a>
+
+    </div>
+
+
+    <div
+        class="form-card"
+        style="max-width:650px;"
+    >
+
+        <h1
+            style="
+                margin-top:0;
+                font-size:27px;
+            "
+        >
+            Отменить посещение?
+        </h1>
+
+
+        <p
+            style="
+                color:var(--muted);
+                line-height:1.6;
+            "
+        >
+
+            Посещение преподавателя
+
+            <strong>
+                {{ visit.teacher.full_name }}
+            </strong>
+
+            на
+
+            <strong>
+                {{ visit.date|date:"d.m.Y" }}
+            </strong>
+
+            будет переведено в статус
+            «Отменено».
+
+        </p>
+
+
+        <div class="notice notice-info">
+
+            Запись не удаляется из базы.
+            Она останется в истории мониторинга.
+
+        </div>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="form-actions">
+
+                <a
+                    class="button button-secondary"
+                    href="{% url 'visits:detail' visit.id %}"
+                >
+                    Не отменять
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="button"
+                    style="
+                        background:#a94640;
+                    "
+                >
+                    Да, отменить посещение
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+</main>
+
+{% endblock %}

@@ -69,6 +69,45 @@
 
 
 
+    {% if can_manage_visit %}
+
+        <div
+            style="
+                display:flex;
+                gap:9px;
+                justify-content:flex-end;
+                flex-wrap:wrap;
+                margin-bottom:18px;
+            "
+        >
+
+            <a
+                class="button button-secondary"
+                href="{% url 'visits:edit' visit.id %}"
+            >
+                Редактировать
+            </a>
+
+
+            {% if can_cancel_visit %}
+
+                <a
+                    class="button button-secondary"
+                    href="{% url 'visits:cancel' visit.id %}"
+                    style="
+                        color:#a94640;
+                    "
+                >
+                    Отменить посещение
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
     <div class="detail-grid">
 
 
