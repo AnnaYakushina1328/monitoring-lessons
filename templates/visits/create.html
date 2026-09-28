@@ -1,124 +1,144 @@
-﻿<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+﻿{% extends "base.html" %}
 
-    <title>Новое посещение</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block title %}
+    Новое посещение · Мониторинг занятий
+{% endblock %}
 
-        body {
-            margin: 0;
-            background: #f5f7fa;
-            color: #1f2937;
-            font-family: Arial, sans-serif;
-        }
 
-        main {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 45px 24px;
-        }
+{% block content %}
 
-        .top {
-            margin-bottom: 28px;
-        }
+<main class="page">
 
-        .back {
-            color: #667085;
-            text-decoration: none;
-        }
 
-        h1 {
-            margin: 12px 0 0;
-        }
+    <div class="page-toolbar">
 
-        form {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 30px;
-        }
-
-        form p {
-            margin: 0 0 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 7px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #d0d5dd;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-
-        input[type="checkbox"] {
-            width: auto;
-        }
-
-        #id_auditors {
-            padding: 10px 0;
-        }
-
-        #id_auditors label {
-            font-weight: 400;
-        }
-
-        button {
-            border: 0;
-            padding: 13px 22px;
-            border-radius: 9px;
-            background: #1f2937;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .errorlist {
-            color: #b42318;
-        }
-    </style>
-</head>
-
-<body>
-
-<main>
-
-    <div class="top">
-
-        <a class="back" href="/visits/">
-            ← К посещениям
+        <a
+            class="page-back"
+            href="{% url 'visits:list' %}"
+        >
+            ← Посещения
         </a>
-
-        <h1>Новое посещение</h1>
 
     </div>
 
-    <form method="post">
+
+    <div class="page-title-row">
+
+        <div class="page-title">
+
+            <h1>
+                Новое посещение
+            </h1>
+
+            <p>
+                Заполните основные сведения
+                о планируемом занятии.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <form
+        method="post"
+        class="form-card"
+    >
 
         {% csrf_token %}
 
-        {{ form.as_p }}
 
-        <button type="submit">
-            Запланировать посещение
-        </button>
+        {% if form.non_field_errors %}
+
+            <div class="notice notice-warning">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+
+        <div class="form-grid">
+
+
+            {% for field in form %}
+
+                <div
+                    class="
+                        form-field
+
+                        {% if field.name == 'topic' or field.name == 'purpose' or field.name == 'auditors' or field.name == 'notes' %}
+                            full
+                        {% endif %}
+                    "
+                >
+
+                    <label
+                        for="{{ field.id_for_label }}"
+                    >
+                        {{ field.label }}
+                    </label>
+
+
+                    {{ field }}
+
+
+                    {% if field.help_text %}
+
+                        <div class="form-help">
+                            {{ field.help_text }}
+                        </div>
+
+                    {% endif %}
+
+
+                    {% for error in field.errors %}
+
+                        <div class="form-error">
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+
+        <div class="form-actions">
+
+            <a
+                class="
+                    button
+                    button-secondary
+                "
+                href="{% url 'visits:list' %}"
+            >
+                Отмена
+            </a>
+
+
+            <button
+                class="button"
+                type="submit"
+            >
+                Создать посещение
+            </button>
+
+        </div>
+
 
     </form>
 
+
 </main>
 
-</body>
-</html>
+{% endblock %}

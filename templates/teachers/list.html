@@ -1,289 +1,230 @@
-﻿<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+﻿{% extends "base.html" %}
 
-    <title>Преподаватели · Мониторинг учебных занятий</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% block title %}
+    Преподаватели · Мониторинг занятий
+{% endblock %}
 
-        body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: #f5f7fa;
-            color: #1f2937;
-        }
 
-        header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-        }
+{% block content %}
 
-        .header-inner {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 18px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<main class="page">
 
-        .brand {
-            font-size: 19px;
-            font-weight: 700;
-            color: #111827;
-            text-decoration: none;
-        }
 
-        .back {
-            color: #667085;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    <div class="page-toolbar">
 
-        main {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 48px 28px;
-        }
-
-        .title-row {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        h1 {
-            margin: 0 0 6px;
-            font-size: 34px;
-        }
-
-        .subtitle {
-            margin: 0;
-            color: #667085;
-        }
-
-        .counter {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: #475467;
-            white-space: nowrap;
-        }
-
-        form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 14px;
-            border: 1px solid #d0d5dd;
-            border-radius: 10px;
-            font-size: 15px;
-            outline: none;
-            background: #fff;
-        }
-
-        input:focus {
-            border-color: #667085;
-        }
-
-        button {
-            border: 0;
-            border-radius: 10px;
-            padding: 12px 20px;
-            cursor: pointer;
-            background: #1f2937;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .table-wrapper {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 15px 18px;
-            border-bottom: 1px solid #eaecf0;
-        }
-
-        th {
-            background: #f9fafb;
-            color: #475467;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        td {
-            font-size: 15px;
-        }
-
-        tr:last-child td {
-            border-bottom: 0;
-        }
-
-        .number {
-            width: 70px;
-            color: #98a2b3;
-        }
-
-        .name {
-            font-weight: 600;
-        }
-
-        .position {
-            color: #667085;
-        }
-
-        .empty {
-            padding: 50px;
-            text-align: center;
-            color: #667085;
-        }
-
-        @media (max-width: 700px) {
-            .title-row {
-                display: block;
-            }
-
-            .counter {
-                display: inline-block;
-                margin-top: 16px;
-            }
-
-            form {
-                flex-direction: column;
-            }
-
-            input {
-                max-width: none;
-            }
-
-            .position-column {
-                display: none;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<header>
-    <div class="header-inner">
-        <a class="brand" href="/">
-            Мониторинг учебных занятий
-        </a>
-
-        <a class="back" href="/">
-            ← На главную
-        </a>
-    </div>
-</header>
-
-<main>
-
-    <div class="title-row">
-
-        <div>
-            <h1>Преподаватели</h1>
-
-            <p class="subtitle">
-                Справочник педагогических работников
-            </p>
-        </div>
-
-        <div class="counter">
-            Найдено: {{ count }}
-        </div>
-
-    </div>
-
-    <form method="get">
-
-        <input
-            type="search"
-            name="q"
-            value="{{ query }}"
-            placeholder="Поиск по ФИО или должности"
-            autocomplete="off"
+        <a
+            class="page-back"
+            href="{% url 'core:home' %}"
         >
+            ← Главная
+        </a>
 
-        <button type="submit">
-            Найти
-        </button>
+    </div>
 
-    </form>
 
-    <div class="table-wrapper">
 
-        {% if teachers %}
+    <div class="page-title-row">
 
-            <table>
+        <div class="page-title">
 
-                <thead>
-                    <tr>
-                        <th class="number">№</th>
-                        <th>ФИО</th>
-                        <th class="position-column">Должность</th>
-                    </tr>
-                </thead>
+            <h1>
+                Преподаватели
+            </h1>
 
-                <tbody>
+            <p>
+                Справочник преподавателей,
+                используемый при планировании мониторинга
+                учебных занятий.
+            </p>
 
-                    {% for teacher in teachers %}
+        </div>
 
-                        <tr>
-                            <td class="number">
-                                {{ forloop.counter }}
-                            </td>
 
-                            <td class="name">
-                                {{ teacher.full_name }}
-                            </td>
+        {% if request.user.is_staff %}
 
-                            <td class="position position-column">
-                                {{ teacher.position|default:"—" }}
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        {% else %}
-
-            <div class="empty">
-                По вашему запросу преподаватели не найдены.
-            </div>
+            <a
+                class="button button-secondary"
+                href="/admin/teachers/teacher/"
+            >
+                Управление справочником
+            </a>
 
         {% endif %}
 
     </div>
 
+
+
+    <div class="teacher-toolbar">
+
+
+        <form
+            method="get"
+            class="teacher-search"
+        >
+
+            <input
+                type="search"
+                name="q"
+                value="{{ q }}"
+                placeholder="Найти по ФИО или должности..."
+                autocomplete="off"
+            >
+
+            <button type="submit">
+                Найти
+            </button>
+
+        </form>
+
+
+        <div class="teacher-result-count">
+
+            Найдено:
+            <strong>
+                {{ teachers|length }}
+            </strong>
+
+            {% if q %}
+
+                <a
+                    class="search-clear"
+                    href="{% url 'teachers:list' %}"
+                >
+                    Сбросить
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+
+    <section class="teacher-list">
+
+
+        {% if teachers %}
+
+
+            <div class="teacher-list-header">
+
+                <div>№</div>
+
+                <div>
+                    Преподаватель
+                </div>
+
+                <div>
+                    Должность
+                </div>
+
+                <div>
+                    Статус
+                </div>
+
+            </div>
+
+
+
+            {% for teacher in teachers %}
+
+                <div class="teacher-row">
+
+
+                    <div class="teacher-number">
+
+                        {% if forloop.counter < 10 %}
+                            0{{ forloop.counter }}
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="teacher-name">
+
+                        {{ teacher.full_name }}
+
+                    </div>
+
+
+                    <div class="teacher-position">
+
+                        {% if teacher.position %}
+
+                            {{ teacher.position }}
+
+                        {% else %}
+
+                            Должность не указана
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="teacher-active">
+                            Работает
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="teacher-empty">
+
+                {% if q %}
+
+                    <strong>
+                        Ничего не найдено
+                    </strong>
+
+                    По запросу
+                    «{{ q }}»
+                    преподавателей нет.
+
+                    <br><br>
+
+                    <a
+                        class="button button-secondary"
+                        href="{% url 'teachers:list' %}"
+                    >
+                        Показать всех
+                    </a>
+
+                {% else %}
+
+                    <strong>
+                        Справочник пока пуст
+                    </strong>
+
+                    Преподаватели появятся здесь
+                    после импорта данных.
+
+                {% endif %}
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
 </main>
 
-</body>
-</html>
+{% endblock %}

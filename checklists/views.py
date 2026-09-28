@@ -5,8 +5,13 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from accounts.models import User
 from visits.models import Visit
+
+from core.permissions import (
+    can_edit_assessment,
+    can_view_visit,
+)
+from django.core.exceptions import PermissionDenied
 
 from .models import (
     Assessment,
@@ -19,18 +24,10 @@ from .models import (
 
 
 def can_edit_visit(user, visit):
-    if user.is_superuser:
-        return True
-
-    if user.role in (
-        User.Role.ADMIN,
-        User.Role.METHODIST,
-    ):
-        return True
-
-    return visit.auditors.filter(
-        pk=user.pk,
-    ).exists()
+    return can_edit_assessment(
+        user,
+        visit,
+    )
 
 
 def prepare_section(section, assessment):
@@ -329,9 +326,9 @@ def checklist_start(
         request.user,
         visit,
     ):
-        return HttpResponseBadRequest(
-            "У вас нет прав на заполнение "
-            "этого посещения."
+        raise PermissionDenied(
+            "У вас нет прав на изменение "
+            "этого чек-листа."
         )
 
     template_code = (
@@ -407,6 +404,15 @@ def assessment_result(
         .prefetch_related("auditors"),
         pk=visit_id,
     )
+
+    if not can_view_visit(
+        request.user,
+        visit,
+    ):
+        raise PermissionDenied(
+            "У вас нет доступа к результатам "
+            "этого посещения."
+        )
 
     assessment = get_object_or_404(
         Assessment.objects.select_related(
@@ -533,9 +539,9 @@ def checklist_section(
         request.user,
         visit,
     ):
-        return HttpResponseBadRequest(
-            "У вас нет прав на заполнение "
-            "этого посещения."
+        raise PermissionDenied(
+            "У вас нет прав на изменение "
+            "этого чек-листа."
         )
 
     assessment = get_object_or_404(

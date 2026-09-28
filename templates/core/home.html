@@ -1,158 +1,325 @@
-﻿<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мониторинг учебных занятий</title>
+﻿{% extends "base.html" %}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
 
-        body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: #f5f7fa;
-            color: #1f2937;
-        }
+{% block title %}
+    Главная · Мониторинг занятий
+{% endblock %}
 
-        header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-        }
 
-        .header-inner {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 18px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+{% block content %}
 
-        .brand {
-            font-size: 19px;
-            font-weight: 700;
-        }
+<main class="page">
 
-        .pilot {
-            font-size: 13px;
-            background: #eef4ff;
-            padding: 7px 12px;
-            border-radius: 20px;
-        }
 
-        main {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 72px 28px;
-        }
+    <div class="page-title-row">
 
-        h1 {
-            font-size: 42px;
-            line-height: 1.1;
-            margin: 0 0 16px;
-        }
+        <div class="page-title">
 
-        .lead {
-            max-width: 720px;
-            color: #667085;
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 44px;
-        }
+            <h1>
+                Мониторинг учебных занятий
+            </h1>
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-        }
+            <p>
+                Планирование посещений,
+                заполнение чек-листов
+                и анализ результатов.
+            </p>
 
-        .card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 24px;
-            min-height: 160px;
-        }
+        </div>
 
-        .card h2 {
-            font-size: 18px;
-            margin: 0 0 10px;
-        }
 
-        .card p {
-            color: #667085;
-            line-height: 1.5;
-            margin: 0;
-        }
+        {% if can_create_visits %}
 
-        .status {
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #475467;
-            background: #f2f4f7;
-            border-radius: 6px;
-            padding: 5px 8px;
-        }
+            <a
+                class="button"
+                href="{% url 'visits:create' %}"
+            >
+                + Новое посещение
+            </a>
 
-        @media (max-width: 800px) {
-            .cards {
-                grid-template-columns: 1fr;
-            }
+        {% endif %}
 
-            h1 {
-                font-size: 34px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-<header>
-    <div class="header-inner">
-        <div class="brand">Мониторинг учебных занятий</div>
-        <div class="pilot">Пилот · общеобразовательные дисциплины</div>
     </div>
-</header>
 
-<main>
-    <h1>Мониторинг учебных занятий</h1>
 
-    <p class="lead">
-        Система планирования посещений, заполнения чек-листов
-        и анализа результатов педагогических работников.
-    </p>
 
-    <div class="cards">
-        <div class="card">
-            <h2>Преподаватели</h2>
-            <p>
-                Справочник преподавателей и история результатов мониторинга.
-            </p>
-            <span class="status">следующий этап</span>
+    <div class="stat-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Преподаватели
+            </div>
+
+            <div class="stat-value">
+                {{ teacher_count }}
+            </div>
+
+            <div class="stat-note">
+                активных в справочнике
+            </div>
+
         </div>
 
-        <div class="card">
-            <h2>Посещения</h2>
-            <p>
-                Планирование и проведение посещений учебных занятий.
-            </p>
-            <span class="status">следующий этап</span>
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Все посещения
+            </div>
+
+            <div class="stat-value">
+                {{ visit_count }}
+            </div>
+
+            <div class="stat-note">
+                доступных вам
+            </div>
+
         </div>
 
-        <div class="card">
-            <h2>Чек-лист ОУП</h2>
-            <p>
-                Электронная оценка общеобразовательного занятия
-                с автоматическим расчётом результата.
-            </p>
-            <span class="status">пилот</span>
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Запланировано
+            </div>
+
+            <div class="stat-value">
+                {{ planned_count }}
+            </div>
+
+            <div class="stat-note">
+                ожидают проведения
+            </div>
+
         </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Завершено
+            </div>
+
+            <div class="stat-value">
+                {{ completed_count }}
+            </div>
+
+            <div class="stat-note">
+                с результатами
+            </div>
+
+        </div>
+
+
     </div>
+
+
+
+    <div class="dashboard-grid">
+
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    Последние посещения
+                </h2>
+
+                <a
+                    class="panel-link"
+                    href="{% url 'visits:list' %}"
+                >
+                    Все посещения →
+                </a>
+
+            </div>
+
+
+            {% for visit in recent_visits %}
+
+                <a
+                    class="visit-item"
+                    href="{% url 'visits:detail' visit.id %}"
+                >
+
+                    <div class="visit-date">
+
+                        {{ visit.date|date:"d.m.Y" }}
+
+                        {% if visit.lesson_number %}
+
+                            <br>
+
+                            {{ visit.lesson_number }}
+                            занятие
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="visit-teacher">
+                            {{ visit.teacher.full_name }}
+                        </div>
+
+                        <div class="visit-meta">
+
+                            {{ visit.subject }}
+
+                            {% if visit.group %}
+                                · {{ visit.group }}
+                            {% endif %}
+
+                            · {{ visit.get_format_display }}
+
+                        </div>
+
+                    </div>
+
+
+                    <span
+                        class="
+                            status
+                            status-{{ visit.status }}
+                        "
+                    >
+                        {{ visit.get_status_display }}
+                    </span>
+
+                </a>
+
+
+            {% empty %}
+
+                <div class="empty-state">
+
+                    Посещений пока нет.
+
+                    {% if can_create_visits %}
+
+                        <br><br>
+
+                        <a
+                            class="button"
+                            href="{% url 'visits:create' %}"
+                        >
+                            Создать первое посещение
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </section>
+
+
+
+        <aside class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    Быстрые действия
+                </h2>
+
+            </div>
+
+
+            <div class="quick-actions">
+
+
+                {% if can_create_visits %}
+
+                    <a
+                        class="quick-action"
+                        href="{% url 'visits:create' %}"
+                    >
+
+                        <strong>
+                            + Запланировать посещение
+                        </strong>
+
+                        <span>
+                            Назначить преподавателя,
+                            дату и эксперта.
+                        </span>
+
+                    </a>
+
+                {% endif %}
+
+
+                <a
+                    class="quick-action"
+                    href="{% url 'visits:list' %}"
+                >
+
+                    <strong>
+                        Открыть посещения
+                    </strong>
+
+                    <span>
+                        Посмотреть доступные посещения
+                        и результаты.
+                    </span>
+
+                </a>
+
+
+                <a
+                    class="quick-action"
+                    href="{% url 'teachers:list' %}"
+                >
+
+                    <strong>
+                        Справочник преподавателей
+                    </strong>
+
+                    <span>
+                        Найти преподавателя
+                        и проверить данные.
+                    </span>
+
+                </a>
+
+
+                {% if request.user.is_staff %}
+
+                    <a
+                        class="quick-action"
+                        href="/admin/"
+                    >
+
+                        <strong>
+                            Администрирование
+                        </strong>
+
+                        <span>
+                            Пользователи,
+                            шаблоны и системные данные.
+                        </span>
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+        </aside>
+
+
+    </div>
+
+
 </main>
-</body>
-</html>
+
+{% endblock %}

@@ -1,0 +1,513 @@
+﻿:root {
+    --kbt-green: #69a84f;
+    --kbt-green-dark: #51883d;
+
+    --kbt-turquoise: #38aaa1;
+    --kbt-turquoise-dark: #278b85;
+
+    --kbt-blue: #4b91bf;
+    --kbt-blue-dark: #35749e;
+
+    --kbt-bg: #eef4f2;
+    --kbt-surface: #fbfcfb;
+    --kbt-border: #dce6e2;
+    --kbt-border-strong: #cbd9d4;
+
+    --kbt-text: #233331;
+    --kbt-muted: #657673;
+}
+
+
+/* ==========================================================
+   ОБЩИЙ ФОН
+   ========================================================== */
+
+body {
+    color: var(--kbt-text);
+
+    background:
+        radial-gradient(
+            circle at 0% 0%,
+            rgba(56,170,161,.07),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 100% 5%,
+            rgba(75,145,191,.06),
+            transparent 24%
+        ),
+        var(--kbt-bg);
+}
+
+
+/* ==========================================================
+   ВЕРХНЯЯ ПАНЕЛЬ
+   ========================================================== */
+
+header {
+    background:
+        rgba(250,252,251,.97);
+
+    border-bottom:
+        1px solid var(--kbt-border);
+
+    box-shadow:
+        0 5px 18px
+        rgba(38,74,68,.045);
+}
+
+
+header::before {
+    content: "";
+
+    display: block;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--kbt-green) 0%,
+            var(--kbt-green) 33%,
+            var(--kbt-turquoise) 33%,
+            var(--kbt-turquoise) 66%,
+            var(--kbt-blue) 66%,
+            var(--kbt-blue) 100%
+        );
+}
+
+
+.teacher-name strong {
+    color: var(--kbt-text);
+}
+
+
+.lesson-meta {
+    color: var(--kbt-muted);
+}
+
+
+.score {
+    color: var(--kbt-turquoise-dark);
+}
+
+
+.score-label {
+    color: #8b9995;
+}
+
+
+/* ==========================================================
+   ОБЩИЙ ПРОГРЕСС
+   ========================================================== */
+
+.overall-progress {
+    background: #dfe8e4;
+}
+
+
+.overall-progress-bar {
+    background:
+        linear-gradient(
+            90deg,
+            var(--kbt-green),
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+
+    border-radius: 999px;
+}
+
+
+/* ==========================================================
+   НАВИГАЦИЯ ПО БЛОКАМ
+   ========================================================== */
+
+.blocks-wrapper {
+    background:
+        rgba(246,249,248,.96);
+
+    border-bottom:
+        1px solid var(--kbt-border);
+}
+
+
+.block {
+    color: var(--kbt-text);
+
+    background:
+        rgba(251,252,251,.92);
+
+    border:
+        1px solid var(--kbt-border-strong);
+
+    box-shadow:
+        0 3px 10px
+        rgba(38,74,68,.025);
+}
+
+
+.block:hover {
+    border-color:
+        var(--kbt-turquoise);
+
+    background:
+        rgba(56,170,161,.055);
+}
+
+
+.block.current {
+    color: #fff;
+
+    border-color:
+        var(--kbt-turquoise-dark);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-turquoise-dark),
+            var(--kbt-blue-dark)
+        );
+
+    box-shadow:
+        0 6px 15px
+        rgba(56,170,161,.16);
+}
+
+
+.block.complete:not(.current) {
+    color: #355e31;
+
+    border-color:
+        rgba(105,168,79,.35);
+
+    background:
+        rgba(105,168,79,.11);
+}
+
+
+/* ==========================================================
+   ОСНОВНОЙ КОНТЕНТ
+   ========================================================== */
+
+.back {
+    color: var(--kbt-muted);
+}
+
+
+.back:hover {
+    color: var(--kbt-turquoise-dark);
+}
+
+
+.section-meta {
+    color: var(--kbt-muted);
+}
+
+
+h1 {
+    color: var(--kbt-text);
+}
+
+
+.section-score-value {
+    color: var(--kbt-turquoise-dark);
+}
+
+
+.section-score-label {
+    color: var(--kbt-muted);
+}
+
+
+/* ==========================================================
+   СТАТУС ЧЕРНОВИКА
+   ========================================================== */
+
+.draft-status {
+    border:
+        1px solid var(--kbt-border);
+
+    background:
+        rgba(251,252,251,.72);
+
+    color: var(--kbt-muted);
+}
+
+
+.draft-status.server {
+    background:
+        rgba(105,168,79,.08);
+
+    border-color:
+        rgba(105,168,79,.22);
+}
+
+
+.draft-status.server
+.draft-dot {
+    background:
+        var(--kbt-green);
+}
+
+
+.draft-status.local {
+    background:
+        rgba(56,170,161,.08);
+
+    border-color:
+        rgba(56,170,161,.25);
+}
+
+
+.draft-status.local
+.draft-dot {
+    background:
+        var(--kbt-turquoise);
+}
+
+
+/* ==========================================================
+   КРИТЕРИИ
+   ========================================================== */
+
+.criterion {
+    background:
+        rgba(251,252,251,.93);
+
+    border:
+        1px solid var(--kbt-border);
+
+    box-shadow:
+        0 6px 22px
+        rgba(38,74,68,.045);
+}
+
+
+.criterion h2 {
+    color: var(--kbt-text);
+}
+
+
+.criterion-state {
+    color: var(--kbt-muted);
+
+    background: #edf2f0;
+}
+
+
+.criterion.complete
+.criterion-state {
+    color: var(--kbt-green-dark);
+
+    background:
+        rgba(105,168,79,.13);
+}
+
+
+.side-title {
+    color: var(--kbt-muted);
+}
+
+
+/* ==========================================================
+   ВАРИАНТЫ ОТВЕТОВ
+   ========================================================== */
+
+.option-content {
+    background:
+        rgba(255,255,255,.62);
+
+    border:
+        1px solid var(--kbt-border-strong);
+}
+
+
+.option:hover
+.option-content {
+    border-color:
+        var(--kbt-turquoise);
+
+    background:
+        rgba(56,170,161,.035);
+}
+
+
+.points {
+    color: var(--kbt-text);
+
+    background: #e7eeeb;
+}
+
+
+.option input:checked
++ .option-content {
+    border-color:
+        var(--kbt-turquoise);
+
+    background:
+        linear-gradient(
+            100deg,
+            rgba(56,170,161,.10),
+            rgba(75,145,191,.07)
+        );
+
+    box-shadow:
+        0 0 0 1px
+        rgba(56,170,161,.30);
+}
+
+
+.option input:checked
++ .option-content
+.points {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-green),
+            var(--kbt-turquoise)
+        );
+}
+
+
+/* ==========================================================
+   КОММЕНТАРИЙ
+   ========================================================== */
+
+.hint {
+    color: var(--kbt-muted);
+}
+
+
+textarea {
+    color: var(--kbt-text);
+
+    background:
+        rgba(255,255,255,.68);
+
+    border:
+        1px solid var(--kbt-border-strong);
+}
+
+
+textarea:focus {
+    outline: none;
+
+    border-color:
+        var(--kbt-turquoise);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(56,170,161,.09);
+
+    background: #fff;
+}
+
+
+/* ==========================================================
+   НИЖНЯЯ ПАНЕЛЬ
+   ========================================================== */
+
+.actions {
+    border-top:
+        1px solid var(--kbt-border);
+
+    background:
+        rgba(238,244,242,.94);
+}
+
+
+button {
+    transition:
+        transform .12s,
+        box-shadow .12s,
+        background .12s;
+}
+
+
+button:hover {
+    transform:
+        translateY(-1px);
+}
+
+
+.secondary {
+    color: var(--kbt-text);
+
+    background:
+        rgba(251,252,251,.95);
+
+    border:
+        1px solid var(--kbt-border-strong);
+}
+
+
+.secondary:hover {
+    background: #fff;
+}
+
+
+.primary {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+
+    box-shadow:
+        0 5px 14px
+        rgba(56,170,161,.15);
+}
+
+
+.finish {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-green),
+            var(--kbt-turquoise-dark)
+        );
+
+    box-shadow:
+        0 5px 14px
+        rgba(105,168,79,.16);
+}
+
+
+/* ==========================================================
+   ОШИБКИ
+   ========================================================== */
+
+.message {
+    color: #95413c;
+
+    background: #fbecea;
+
+    border:
+        1px solid #f1d5d2;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .criterion {
+        border-radius: 14px;
+    }
+
+
+    .block {
+        min-width: 140px;
+    }
+
+}

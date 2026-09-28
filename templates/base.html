@@ -1,0 +1,131 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Мониторинг учебных занятий
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/app.css' %}"
+    >
+
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+{% if request.user.is_authenticated %}
+
+<header class="app-header">
+
+    <div class="app-header-inner">
+
+        <a
+            class="app-brand"
+            href="{% url 'core:home' %}"
+        >
+            Мониторинг занятий
+        </a>
+
+
+        <nav class="app-nav">
+
+            <a href="{% url 'core:home' %}">
+                Главная
+            </a>
+
+            <a href="{% url 'visits:list' %}">
+                Посещения
+            </a>
+
+            <a href="{% url 'teachers:list' %}">
+                Преподаватели
+            </a>
+
+            {% if request.user.is_staff %}
+
+                <a href="/admin/">
+                    Администрирование
+                </a>
+
+            {% endif %}
+
+        </nav>
+
+
+        <div class="user-area">
+
+            <div class="user-info">
+
+                <div class="user-name">
+
+                    {% if request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+
+                </div>
+
+                <div class="user-role">
+                    {{ request.user.get_role_display }}
+                </div>
+
+            </div>
+
+
+            <form
+                method="post"
+                action="{% url 'logout' %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    class="logout-button"
+                    type="submit"
+                >
+                    Выйти
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</header>
+
+{% endif %}
+
+
+{% block content %}
+{% endblock %}
+
+
+{% block scripts %}
+{% endblock %}
+
+
+</body>
+
+</html>

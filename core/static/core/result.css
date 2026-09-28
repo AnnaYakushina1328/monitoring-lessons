@@ -1,0 +1,841 @@
+﻿/* ==========================================================
+   RESULT PAGE
+   ========================================================== */
+
+.result-hero {
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 22px;
+
+    padding: 28px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    gap: 30px;
+
+    align-items: center;
+
+    background:
+        linear-gradient(
+            115deg,
+            rgba(251,252,251,.95),
+            rgba(225,242,238,.85)
+        );
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 20px;
+
+    box-shadow: var(--shadow);
+}
+
+
+.result-hero::after {
+    content: "";
+
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    right: -80px;
+    top: -120px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(105,168,79,.18),
+            rgba(56,170,161,.18),
+            rgba(75,145,191,.16)
+        );
+}
+
+
+.result-hero-main,
+.result-total {
+    position: relative;
+    z-index: 1;
+}
+
+
+.result-kicker {
+    margin-bottom: 8px;
+
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .08em;
+
+    text-transform: uppercase;
+}
+
+
+.result-hero h1 {
+    margin: 0;
+
+    font-size: 31px;
+
+    line-height: 1.15;
+
+    letter-spacing: -.035em;
+}
+
+
+.result-meta {
+    margin-top: 10px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.result-total {
+    min-width: 235px;
+
+    text-align: right;
+}
+
+
+.result-score {
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 52px;
+
+    line-height: 1;
+
+    font-weight: 850;
+
+    letter-spacing: -.055em;
+}
+
+
+.result-level {
+    margin-top: 10px;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.result-template {
+    margin-top: 7px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   OVERALL PROGRESS
+   ========================================================== */
+
+.result-overall-progress {
+    height: 7px;
+
+    margin-top: 20px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        rgba(101,118,115,.12);
+}
+
+
+.result-overall-progress-bar {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--kbt-green),
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+}
+
+
+/* ==========================================================
+   SUMMARY
+   ========================================================== */
+
+.result-section-title {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: flex-end;
+
+    gap: 20px;
+
+    margin:
+        30px 0
+        14px;
+}
+
+
+.result-section-title h2 {
+    margin: 0;
+
+    font-size: 20px;
+}
+
+
+.result-section-title p {
+    margin: 4px 0 0;
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+
+.result-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+
+.result-summary-card {
+    padding: 17px 18px;
+
+    background:
+        rgba(251,252,251,.91);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(38,74,68,.035);
+}
+
+
+.result-summary-top {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    gap: 18px;
+
+    align-items: flex-start;
+}
+
+
+.result-summary-number {
+    margin-bottom: 4px;
+
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 10px;
+
+    font-weight: 850;
+
+    text-transform: uppercase;
+
+    letter-spacing: .06em;
+}
+
+
+.result-summary-name {
+    font-size: 14px;
+
+    font-weight: 750;
+
+    line-height: 1.35;
+}
+
+
+.result-summary-score {
+    flex: 0 0 auto;
+
+    color: var(--text);
+
+    font-size: 18px;
+
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+
+.result-progress {
+    height: 7px;
+
+    margin-top: 15px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #e3ebe8;
+}
+
+
+.result-progress-bar {
+    height: 100%;
+
+    min-width: 2px;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--kbt-green),
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+}
+
+
+/* ==========================================================
+   DETAILS
+   ========================================================== */
+
+.result-details {
+    display: grid;
+
+    gap: 12px;
+}
+
+
+.result-block {
+    overflow: hidden;
+
+    background:
+        rgba(251,252,251,.92);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(38,74,68,.035);
+}
+
+
+.result-block summary {
+    list-style: none;
+
+    cursor: pointer;
+
+    display: grid;
+
+    grid-template-columns:
+        38px
+        minmax(0, 1fr)
+        auto
+        24px;
+
+    gap: 12px;
+
+    align-items: center;
+
+    padding:
+        16px
+        18px;
+
+    transition:
+        background .12s;
+}
+
+
+.result-block summary:hover {
+    background:
+        rgba(56,170,161,.045);
+}
+
+
+.result-block summary::-webkit-details-marker {
+    display: none;
+}
+
+
+.result-block-number {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-green),
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+
+    font-size: 12px;
+
+    font-weight: 850;
+}
+
+
+.result-block-name {
+    font-size: 14px;
+
+    font-weight: 750;
+
+    line-height: 1.35;
+}
+
+
+.result-block-score {
+    font-size: 15px;
+
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+
+.result-chevron {
+    color: var(--muted);
+
+    font-size: 17px;
+
+    transition:
+        transform .15s;
+}
+
+
+.result-block[open]
+.result-chevron {
+    transform:
+        rotate(180deg);
+}
+
+
+.result-block-body {
+    padding:
+        0
+        18px
+        18px;
+
+    border-top:
+        1px solid #e5edeb;
+}
+
+
+/* ==========================================================
+   CRITERIA
+   ========================================================== */
+
+.result-criterion {
+    padding:
+        17px
+        0;
+
+    border-bottom:
+        1px solid #e7eeeb;
+}
+
+
+.result-criterion:last-child {
+    border-bottom: 0;
+}
+
+
+.result-criterion-header {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    gap: 20px;
+
+    align-items: flex-start;
+}
+
+
+.result-criterion-title {
+    font-size: 13px;
+
+    font-weight: 750;
+
+    line-height: 1.45;
+}
+
+
+.result-criterion-score {
+    flex: 0 0 auto;
+
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 13px;
+
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+
+.result-answer {
+    margin-top: 9px;
+
+    padding-left: 13px;
+
+    border-left:
+        3px solid
+        rgba(56,170,161,.25);
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+.result-answer strong {
+    color: var(--text);
+}
+
+
+.result-comment {
+    margin-top: 10px;
+
+    padding:
+        10px
+        12px;
+
+    border-radius: 9px;
+
+    background:
+        rgba(75,145,191,.07);
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+.result-comment strong {
+    color: var(--kbt-blue-dark);
+}
+
+
+/* ==========================================================
+   GENERAL COMMENT
+   ========================================================== */
+
+.result-general-comment {
+    margin-top: 18px;
+
+    padding: 18px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+
+    background:
+        rgba(251,252,251,.92);
+}
+
+
+.result-general-comment h3 {
+    margin:
+        0 0 8px;
+
+    font-size: 14px;
+}
+
+
+.result-general-comment p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+/* ==========================================================
+   ACTIONS
+   ========================================================== */
+
+.result-actions {
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 24px;
+}
+
+
+/* ==========================================================
+   MISMATCH WARNING
+   ========================================================== */
+
+.result-warning {
+    margin-bottom: 18px;
+
+    padding:
+        14px
+        16px;
+
+    color: var(--danger-text);
+
+    background: var(--danger-bg);
+
+    border:
+        1px solid #f1d5d2;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 750px) {
+
+    .result-hero {
+        grid-template-columns: 1fr;
+
+        padding: 22px;
+    }
+
+
+    .result-total {
+        min-width: 0;
+
+        text-align: left;
+    }
+
+
+    .result-score {
+        font-size: 43px;
+    }
+
+
+    .result-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .result-block summary {
+        grid-template-columns:
+            35px
+            minmax(0, 1fr)
+            auto;
+    }
+
+
+    .result-chevron {
+        display: none;
+    }
+
+
+    .result-criterion-header {
+        display: block;
+    }
+
+
+    .result-criterion-score {
+        margin-top: 5px;
+    }
+
+
+    .result-actions {
+        flex-direction: column;
+    }
+
+
+    .result-actions .button {
+        width: 100%;
+    }
+
+}
+
+
+/* ==========================================================
+   PRINT
+   ========================================================== */
+
+@media print {
+
+    .app-header,
+    .page-toolbar,
+    .result-actions {
+        display: none !important;
+    }
+
+
+    body {
+        background: #fff;
+    }
+
+
+    .page {
+        max-width: none;
+
+        padding: 0;
+    }
+
+
+    .result-hero,
+    .result-summary-card,
+    .result-block {
+        box-shadow: none;
+    }
+
+
+    .result-block {
+        break-inside: avoid;
+    }
+
+}
+
+/* ==========================================================
+   RESULT PAGE — визуальное упрощение
+   ========================================================== */
+
+
+/* У заголовков больше нет лишнего второго уровня текста */
+
+.result-section-title {
+    margin:
+        30px 0
+        14px;
+}
+
+
+.result-section-title h2 {
+    margin: 0;
+}
+
+
+/* ----------------------------------------------------------
+   Номер блока:
+   больше никакого цветного квадрата
+   ---------------------------------------------------------- */
+
+.result-block-number {
+    width: auto;
+    height: auto;
+
+    display: block;
+
+    color: var(--kbt-turquoise-dark);
+
+    background: none;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    letter-spacing: .05em;
+}
+
+
+/* Чуть уменьшаем место под номер */
+
+.result-block summary {
+    grid-template-columns:
+        28px
+        minmax(0, 1fr)
+        auto
+        20px;
+}
+
+
+/* Сам заголовок блока немного спокойнее */
+
+.result-block-name {
+    color: var(--text);
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+/* Стрелка тоже не должна привлекать внимание */
+
+.result-chevron {
+    color: #8b9995;
+
+    font-size: 14px;
+}
+
+
+/* ----------------------------------------------------------
+   На мобильных
+   ---------------------------------------------------------- */
+
+@media (max-width: 750px) {
+
+    .result-block summary {
+        grid-template-columns:
+            25px
+            minmax(0, 1fr)
+            auto;
+    }
+
+}
+
