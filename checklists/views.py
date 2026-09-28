@@ -71,58 +71,133 @@ def prepare_section(section, assessment):
     return criteria
 
 
-def get_progress(assessment):
-    criteria = list(
-        ChecklistCriterion.objects
-        .filter(
-            section__template=assessment.template,
-        )
-        .prefetch_related("options")
+def criterion_is_complete(
+    criterion,
+    answer,
+):
+    options = list(
+        criterion.options.all()
     )
 
+    teacher_required = any(
+        option.side == ChecklistOption.Side.TEACHER
+        for option in options
+    )
+
+    student_required = any(
+        option.side == ChecklistOption.Side.STUDENT
+        for option in options
+    )
+
+    if answer is None:
+        return False
+
+    teacher_ok = (
+        not teacher_required
+        or answer.teacher_option_id is not None
+    )
+
+    student_ok = (
+        not student_required
+        or answer.student_option_id is not None
+    )
+
+    return teacher_ok and student_ok
+
+
+def get_section_navigation(
+    assessment,
+    current_order=None,
+):
     answers = {
         answer.criterion_id: answer
-        for answer in assessment.answers.all()
+        for answer in assessment.answers.select_related(
+            "teacher_option",
+            "student_option",
+        )
     }
 
-    completed = 0
+    sections = list(
+        assessment.template.sections
+        .order_by("order")
+        .prefetch_related(
+            "criteria__options"
+        )
+    )
 
-    for criterion in criteria:
-        options = list(
-            criterion.options.all()
+    navigation = []
+
+    for section in sections:
+        criteria = list(
+            section.criteria.all()
         )
 
-        teacher_required = any(
-            option.side == ChecklistOption.Side.TEACHER
-            for option in options
+        completed = 0
+        score = 0
+        max_score = 0
+
+        for criterion in criteria:
+            answer = answers.get(
+                criterion.pk
+            )
+
+            if criterion_is_complete(
+                criterion,
+                answer,
+            ):
+                completed += 1
+
+            if answer:
+                if answer.teacher_option:
+                    score += (
+                        answer.teacher_option.score
+                    )
+
+                if answer.student_option:
+                    score += (
+                        answer.student_option.score
+                    )
+
+            max_score += criterion.max_score
+
+        navigation.append(
+            {
+                "order": section.order,
+                "title": section.title,
+                "completed": completed,
+                "total": len(criteria),
+                "score": score,
+                "max_score": max_score,
+                "is_complete": (
+                    completed == len(criteria)
+                    and len(criteria) > 0
+                ),
+                "is_current": (
+                    section.order
+                    == current_order
+                ),
+            }
         )
 
-        student_required = any(
-            option.side == ChecklistOption.Side.STUDENT
-            for option in options
-        )
+    return navigation
 
-        answer = answers.get(
-            criterion.pk
-        )
 
-        if not answer:
-            continue
+def get_progress(assessment):
+    navigation = get_section_navigation(
+        assessment
+    )
 
-        teacher_ok = (
-            not teacher_required
-            or answer.teacher_option_id is not None
-        )
+    completed = sum(
+        item["completed"]
+        for item in navigation
+    )
 
-        student_ok = (
-            not student_required
-            or answer.student_option_id is not None
-        )
+    total = sum(
+        item["total"]
+        for item in navigation
+    )
 
-        if teacher_ok and student_ok:
-            completed += 1
-
-    return completed, len(criteria)
+    return completed, total
 
 
 def save_section_answers(
@@ -130,14 +205,6 @@ def save_section_answers(
     assessment,
     criteria,
 ):
-    """
-    Сохраняет ответы текущего блока.
-
-    Важно:
-    если какое-либо поле отсутствует в POST,
-    существующее значение НЕ затирается.
-    """
-
     with transaction.atomic():
 
         for criterion in criteria:
@@ -161,10 +228,6 @@ def save_section_answers(
             comment_field = (
                 f"comment_{criterion.pk}"
             )
-
-            # --------------------------
-            # Ответ преподавателя
-            # --------------------------
 
             if teacher_field in request.POST:
 
@@ -194,10 +257,6 @@ def save_section_answers(
                     teacher_option
                 )
 
-            # --------------------------
-            # Ответ студента
-            # --------------------------
-
             if student_field in request.POST:
 
                 student_value = request.POST.get(
@@ -226,11 +285,8 @@ def save_section_answers(
                     student_option
                 )
 
-            # --------------------------
-            # Комментарий
-            # --------------------------
-
             if comment_field in request.POST:
+
                 answer.comment = (
                     request.POST.get(
                         comment_field,
@@ -301,12 +357,12 @@ def checklist_start(
         )
 
     if assessment.template_id != template.id:
+
         messages.error(
             request,
             (
-                "К этому посещению привязан чек-лист "
-                "другого формата. Его необходимо "
-                "сбросить перед началом нового оценивания."
+                "К этому посещению привязан "
+                "чек-лист другого формата."
             ),
         )
 
@@ -322,6 +378,7 @@ def checklist_start(
     )
 
     if first_section is None:
+
         messages.error(
             request,
             "В шаблоне отсутствуют блоки.",
@@ -345,11 +402,9 @@ def assessment_result(
     visit_id,
 ):
     visit = get_object_or_404(
-        Visit.objects.select_related(
-            "teacher"
-        ).prefetch_related(
-            "auditors"
-        ),
+        Visit.objects
+        .select_related("teacher")
+        .prefetch_related("auditors"),
         pk=visit_id,
     )
 
@@ -389,7 +444,9 @@ def assessment_result(
                 criterion.pk
             )
 
-            criterion.current_answer = answer
+            criterion.current_answer = (
+                answer
+            )
 
             score = 0
 
@@ -405,6 +462,7 @@ def assessment_result(
                     )
 
             criterion.answer_score = score
+
             criterion.max_possible_score = (
                 criterion.max_score
             )
@@ -412,9 +470,17 @@ def assessment_result(
             section_score += score
             section_max += criterion.max_score
 
-        section.result_score = section_score
-        section.result_max = section_max
-        section.result_criteria = criteria
+        section.result_score = (
+            section_score
+        )
+
+        section.result_max = (
+            section_max
+        )
+
+        section.result_criteria = (
+            criteria
+        )
 
     expected_template_code = (
         "online"
@@ -431,7 +497,9 @@ def assessment_result(
         "visit": visit,
         "assessment": assessment,
         "sections": sections,
-        "template_mismatch": template_mismatch,
+        "template_mismatch": (
+            template_mismatch
+        ),
         "can_edit": (
             can_edit_visit(
                 request.user,
@@ -524,13 +592,10 @@ def checklist_section(
             "save",
         )
 
-        # ------------------------------
-        # Назад
-        # ------------------------------
-
         if action == "previous":
 
             if current_index > 0:
+
                 return redirect(
                     "checklists:section",
                     visit_id=visit.pk,
@@ -541,16 +606,13 @@ def checklist_section(
                     ),
                 )
 
-        # ------------------------------
-        # Далее
-        # ------------------------------
-
         if action == "next":
 
             if (
                 current_index
                 < len(section_orders) - 1
             ):
+
                 return redirect(
                     "checklists:section",
                     visit_id=visit.pk,
@@ -560,10 +622,6 @@ def checklist_section(
                         ]
                     ),
                 )
-
-        # ------------------------------
-        # Завершить
-        # ------------------------------
 
         if action == "finish":
 
@@ -629,17 +687,7 @@ def checklist_section(
                 pk=visit.pk,
             )
 
-        # ====================================================
-        # ВАЖНО:
-        # обычное "Сохранить" всегда делает новый GET.
-        #
-        # Благодаря этому:
-        # - баллы не пропадают;
-        # - radio остаются отмечены;
-        # - прогресс перечитывается из БД;
-        # - повторный POST по F5 невозможен.
-        # ====================================================
-
+        # POST -> REDIRECT -> GET
         return redirect(
             "checklists:section",
             visit_id=visit.pk,
@@ -650,10 +698,19 @@ def checklist_section(
     # GET
     # ========================================================
 
-    completed, total = (
-        get_progress(
-            assessment
-        )
+    navigation = get_section_navigation(
+        assessment,
+        current_order=section.order,
+    )
+
+    completed = sum(
+        item["completed"]
+        for item in navigation
+    )
+
+    total = sum(
+        item["total"]
+        for item in navigation
     )
 
     progress_percent = (
@@ -662,6 +719,12 @@ def checklist_section(
         )
         if total
         else 0
+    )
+
+    current_section_summary = next(
+        item
+        for item in navigation
+        if item["order"] == section.order
     )
 
     previous_order = (
@@ -701,13 +764,43 @@ def checklist_section(
             previous_order
         ),
 
-        "next_order": next_order,
+        "next_order": (
+            next_order
+        ),
 
         "completed": completed,
         "total": total,
 
         "progress_percent": (
             progress_percent
+        ),
+
+        "section_navigation": (
+            navigation
+        ),
+
+        "current_section_completed": (
+            current_section_summary[
+                "completed"
+            ]
+        ),
+
+        "current_section_total": (
+            current_section_summary[
+                "total"
+            ]
+        ),
+
+        "current_section_score": (
+            current_section_summary[
+                "score"
+            ]
+        ),
+
+        "current_section_max": (
+            current_section_summary[
+                "max_score"
+            ]
         ),
     }
 

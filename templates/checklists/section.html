@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,272 +11,992 @@
     >
 
     <title>
-        {{ section.title }} · Чек-лист ОУП
+        {{ section.title }} · Чек-лист
     </title>
 
+
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
             background: #f5f7fa;
             color: #1f2937;
         }
 
+
+        /* ==================================================
+           HEADER
+           ================================================== */
+
         header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
             position: sticky;
             top: 0;
-            z-index: 10;
+
+            z-index: 100;
+
+            background: rgba(
+                255,
+                255,
+                255,
+                .97
+            );
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            backdrop-filter:
+                blur(10px);
         }
+
 
         .header-inner {
-            max-width: 1000px;
+            max-width: 1100px;
+
             margin: 0 auto;
-            padding: 14px 24px;
+
+            padding:
+                13px
+                24px
+                10px;
         }
 
-        .top-row {
+
+        .header-main {
             display: flex;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             align-items: center;
+
             gap: 20px;
         }
 
-        .brand {
-            font-weight: 700;
+
+        .teacher-name {
+            min-width: 0;
         }
 
+
+        .teacher-name strong {
+            display: block;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+
+            text-overflow:
+                ellipsis;
+        }
+
+
+        .lesson-meta {
+            margin-top: 4px;
+
+            color: #667085;
+
+            font-size: 13px;
+        }
+
+
+        .score-area {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+
         .score {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 800;
         }
 
-        .progress {
+
+        .score-label {
+            margin-top: 2px;
+
+            color: #98a2b3;
+
+            font-size: 11px;
+        }
+
+
+        .overall-progress {
             height: 6px;
-            margin-top: 12px;
-            background: #eaecf0;
-            border-radius: 20px;
+
+            margin-top: 11px;
+
             overflow: hidden;
+
+            border-radius: 999px;
+
+            background: #eaecf0;
         }
 
-        .progress-bar {
+
+        .overall-progress-bar {
             height: 100%;
+
+            width: 0;
+
             background: #344054;
+
+            transition: width .2s;
         }
 
-        main {
-            max-width: 1000px;
+
+
+        /* ==================================================
+           BLOCK NAVIGATION
+           ================================================== */
+
+        .blocks-wrapper {
+            background: #fff;
+
+            border-bottom:
+                1px solid #e5e7eb;
+        }
+
+
+        .blocks {
+            max-width: 1100px;
+
             margin: 0 auto;
-            padding: 35px 24px 100px;
+
+            padding:
+                12px
+                24px;
+
+            display: flex;
+
+            gap: 9px;
+
+            overflow-x: auto;
+
+            scrollbar-width: thin;
         }
 
-        .back {
-            color: #667085;
-            text-decoration: none;
-        }
 
-        .section-meta {
-            margin-top: 28px;
-            color: #667085;
-            font-size: 14px;
-        }
+        .block {
+            min-width: 155px;
 
-        h1 {
-            margin: 7px 0 8px;
-            font-size: 32px;
-        }
+            padding: 10px 12px;
 
-        .filled {
-            color: #667085;
-            margin-bottom: 30px;
-        }
+            border:
+                1px solid #d0d5dd;
 
-        .criterion {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 18px;
-        }
-
-        .criterion h2 {
-            margin: 0 0 20px;
-            font-size: 19px;
-            line-height: 1.4;
-        }
-
-        .side-title {
-            margin: 22px 0 10px;
-            color: #475467;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .option {
-            display: block;
-            position: relative;
-            margin: 9px 0;
-            cursor: pointer;
-        }
-
-        .option input {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .option-content {
-            display: grid;
-            grid-template-columns: 44px 1fr;
-            gap: 12px;
-            padding: 14px;
-            border: 1px solid #d0d5dd;
             border-radius: 11px;
-            transition: .15s;
+
+            text-decoration: none;
+
+            color: #344054;
+
+            background: #fff;
+
+            transition:
+                border .15s,
+                background .15s;
         }
 
-        .option:hover .option-content {
+
+        .block:hover {
             border-color: #98a2b3;
         }
 
-        .option input:checked + .option-content {
+
+        .block.current {
+            color: #fff;
+
+            background: #344054;
+
             border-color: #344054;
-            background: #f2f4f7;
-            box-shadow: 0 0 0 1px #344054;
         }
 
-        .points {
+
+        .block.complete:not(.current) {
+            background: #ecfdf3;
+
+            border-color: #abefc6;
+        }
+
+
+        .block-number {
+            font-size: 11px;
+
+            opacity: .75;
+        }
+
+
+        .block-title {
+            margin-top: 3px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow:
+                ellipsis;
+        }
+
+
+        .block-stats {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 34px;
-            border-radius: 8px;
-            background: #eaecf0;
-            font-weight: 800;
+
+            justify-content:
+                space-between;
+
+            gap: 8px;
+
+            margin-top: 7px;
+
+            font-size: 11px;
+
+            opacity: .8;
         }
 
-        .option-text {
-            line-height: 1.45;
+
+
+        /* ==================================================
+           PAGE
+           ================================================== */
+
+        main {
+            max-width: 1000px;
+
+            margin: 0 auto;
+
+            padding:
+                30px
+                24px
+                110px;
         }
 
-        textarea {
-            width: 100%;
-            min-height: 85px;
-            padding: 12px;
-            resize: vertical;
-            border: 1px solid #d0d5dd;
-            border-radius: 9px;
-            font-family: inherit;
+
+        .back {
+            color: #667085;
+
+            text-decoration: none;
+
             font-size: 14px;
         }
 
-        .hint {
-            margin: 8px 0;
+
+        .section-head {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                flex-end;
+
+            gap: 24px;
+
+            margin:
+                25px 0
+                25px;
+        }
+
+
+        .section-meta {
             color: #667085;
+
+            font-size: 13px;
+
+            margin-bottom: 6px;
+        }
+
+
+        h1 {
+            margin: 0;
+
+            font-size: 31px;
+
+            line-height: 1.2;
+        }
+
+
+        .section-score {
+            text-align: right;
+
+            white-space: nowrap;
+        }
+
+
+        .section-score-value {
+            font-size: 25px;
+
+            font-weight: 800;
+        }
+
+
+        .section-score-label {
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: #667085;
+        }
+
+
+
+        /* ==================================================
+           DRAFT STATUS
+           ================================================== */
+
+        .draft-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            min-height: 38px;
+
+            margin-bottom: 20px;
+
+            padding:
+                9px
+                12px;
+
+            border-radius: 9px;
+
+            background: #f2f4f7;
+
+            color: #475467;
+
             font-size: 13px;
         }
 
-        .messages {
-            margin-bottom: 20px;
+
+        .draft-dot {
+            width: 8px;
+            height: 8px;
+
+            flex: 0 0 auto;
+
+            border-radius: 50%;
+
+            background: #98a2b3;
         }
+
+
+        .draft-status.local
+        .draft-dot {
+            background: #f79009;
+        }
+
+
+        .draft-status.offline
+        .draft-dot {
+            background: #d92d20;
+        }
+
+
+        .draft-status.server
+        .draft-dot {
+            background: #17b26a;
+        }
+
+
+
+        /* ==================================================
+           MESSAGES
+           ================================================== */
+
+        .messages {
+            margin-bottom: 18px;
+        }
+
 
         .message {
+            padding:
+                13px
+                15px;
+
+            border-radius: 9px;
+
             background: #fef3f2;
+
             color: #b42318;
-            padding: 13px 15px;
-            border-radius: 9px;
         }
 
-        .actions {
-            position: sticky;
-            bottom: 0;
-            background: rgba(245,247,250,.96);
-            border-top: 1px solid #e5e7eb;
-            padding: 15px 0;
-            margin-top: 25px;
+
+
+        /* ==================================================
+           CRITERION
+           ================================================== */
+
+        .criterion {
+            margin-bottom: 17px;
+
+            padding: 24px;
+
+            background: #fff;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 16px;
         }
 
-        .actions-inner {
+
+        .criterion-header {
             display: flex;
-            justify-content: space-between;
-            gap: 10px;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                flex-start;
+
+            gap: 18px;
+
+            margin-bottom: 19px;
         }
 
-        button {
-            padding: 12px 17px;
-            border: 0;
-            border-radius: 9px;
+
+        .criterion h2 {
+            margin: 0;
+
+            font-size: 18px;
+
+            line-height: 1.4;
+        }
+
+
+        .criterion-state {
+            flex: 0 0 auto;
+
+            padding:
+                5px
+                8px;
+
+            border-radius: 7px;
+
+            background: #f2f4f7;
+
+            color: #667085;
+
+            font-size: 11px;
+
             font-weight: 700;
+        }
+
+
+        .criterion.complete
+        .criterion-state {
+            background: #ecfdf3;
+
+            color: #067647;
+        }
+
+
+        .side-group {
+            margin-top: 21px;
+        }
+
+
+        .side-title {
+            margin-bottom: 9px;
+
+            color: #475467;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing: .02em;
+        }
+
+
+
+        /* ==================================================
+           OPTIONS
+           ================================================== */
+
+        .option {
+            position: relative;
+
+            display: block;
+
+            margin: 8px 0;
+
             cursor: pointer;
         }
 
-        .secondary {
-            background: white;
-            color: #344054;
-            border: 1px solid #d0d5dd;
+
+        .option input {
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
         }
+
+
+        .option-content {
+            display: grid;
+
+            grid-template-columns:
+                44px
+                1fr;
+
+            align-items:
+                flex-start;
+
+            gap: 12px;
+
+            padding: 14px;
+
+            border:
+                1px solid #d0d5dd;
+
+            border-radius: 11px;
+
+            transition:
+                border .12s,
+                background .12s,
+                box-shadow .12s;
+        }
+
+
+        .option:hover
+        .option-content {
+            border-color: #98a2b3;
+        }
+
+
+        .option input:checked
+        + .option-content {
+            border-color: #344054;
+
+            background: #f2f4f7;
+
+            box-shadow:
+                0 0 0 1px #344054;
+        }
+
+
+        .points {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 34px;
+
+            padding: 4px;
+
+            border-radius: 8px;
+
+            background: #eaecf0;
+
+            font-weight: 800;
+        }
+
+
+        .option input:checked
+        + .option-content
+        .points {
+            color: #fff;
+
+            background: #344054;
+        }
+
+
+        .option-text {
+            padding-top: 2px;
+
+            line-height: 1.45;
+        }
+
+
+
+        /* ==================================================
+           COMMENTS
+           ================================================== */
+
+        .comment-area {
+            margin-top: 21px;
+        }
+
+
+        .hint {
+            margin: 7px 0;
+
+            color: #667085;
+
+            font-size: 12px;
+        }
+
+
+        textarea {
+            width: 100%;
+
+            min-height: 82px;
+
+            padding: 12px;
+
+            resize: vertical;
+
+            border:
+                1px solid #d0d5dd;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            font: inherit;
+
+            font-size: 14px;
+        }
+
+
+        textarea:focus {
+            border-color: #667085;
+        }
+
+
+
+        /* ==================================================
+           ACTIONS
+           ================================================== */
+
+        .actions {
+            position: sticky;
+
+            bottom: 0;
+
+            z-index: 80;
+
+            margin-top: 25px;
+
+            padding:
+                13px
+                0;
+
+            border-top:
+                1px solid #e5e7eb;
+
+            background:
+                rgba(
+                    245,
+                    247,
+                    250,
+                    .96
+                );
+
+            backdrop-filter:
+                blur(8px);
+        }
+
+
+        .actions-inner {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .action-group {
+            display: flex;
+
+            gap: 9px;
+        }
+
+
+        button {
+            min-height: 44px;
+
+            padding:
+                11px
+                17px;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+
+        .secondary {
+            color: #344054;
+
+            background: #fff;
+
+            border:
+                1px solid #d0d5dd;
+        }
+
 
         .primary {
+            color: #fff;
+
             background: #1f2937;
-            color: white;
         }
+
 
         .finish {
-            background: #166534;
-            color: white;
+            color: #fff;
+
+            background: #067647;
         }
 
-        @media (max-width: 650px) {
-            .option-content {
-                grid-template-columns: 36px 1fr;
+
+
+        /* ==================================================
+           MOBILE / TABLET
+           ================================================== */
+
+        @media (max-width: 700px) {
+
+            .header-inner {
+                padding:
+                    11px
+                    16px
+                    9px;
             }
 
-            .actions-inner {
-                flex-wrap: wrap;
+
+            .blocks {
+                padding:
+                    9px
+                    16px;
             }
+
+
+            .block {
+                min-width: 135px;
+            }
+
+
+            main {
+                padding:
+                    25px
+                    16px
+                    105px;
+            }
+
+
+            .section-head {
+                display: block;
+            }
+
+
+            .section-score {
+                margin-top: 13px;
+
+                text-align: left;
+            }
+
 
             h1 {
-                font-size: 27px;
+                font-size: 26px;
             }
+
+
+            .criterion {
+                padding: 18px;
+            }
+
+
+            .option-content {
+                grid-template-columns:
+                    38px
+                    1fr;
+
+                padding: 12px;
+            }
+
+
+            .actions-inner {
+                align-items: stretch;
+            }
+
+
+            .action-group {
+                flex: 1;
+            }
+
+
+            button {
+                flex: 1;
+            }
+
+
+            .hide-small {
+                display: none;
+            }
+
         }
+
     </style>
+
 </head>
 
-<body>
+
+
+<body
+    data-visit-id="{{ visit.id }}"
+    data-section-order="{{ section.order }}"
+    data-server-updated="{{ assessment.updated_at|date:'c' }}"
+    data-server-total-score="{{ assessment.total_score }}"
+    data-server-current-score="{{ current_section_score }}"
+    data-server-completed="{{ completed }}"
+    data-server-current-completed="{{ current_section_completed }}"
+    data-total-criteria="{{ total }}"
+>
+
 
 <header>
 
     <div class="header-inner">
 
-        <div class="top-row">
+        <div class="header-main">
 
-            <div class="brand">
-                {{ visit.teacher.full_name }}
+            <div class="teacher-name">
+
+                <strong>
+                    {{ visit.teacher.full_name }}
+                </strong>
+
+                <div class="lesson-meta">
+                    {{ visit.subject }}
+                    ·
+                    {{ visit.date|date:"d.m.Y" }}
+                    ·
+                    {{ visit.get_format_display }}
+                </div>
+
             </div>
 
-            <div class="score">
-                {{ assessment.total_score }}
-                /
-                {{ assessment.template.max_score }}
+
+            <div class="score-area">
+
+                <div class="score">
+
+                    <span id="live-total-score">
+                        {{ assessment.total_score }}
+                    </span>
+
+                    /
+
+                    {{ assessment.template.max_score }}
+
+                </div>
+
+                <div class="score-label">
+                    текущий балл
+                </div>
+
             </div>
 
         </div>
 
-        <div class="progress">
+
+        <div class="overall-progress">
+
             <div
-                class="progress-bar"
+                id="overall-progress-bar"
+                class="overall-progress-bar"
                 style="width: {{ progress_percent }}%;"
             ></div>
+
         </div>
 
     </div>
 
 </header>
+
+
+
+<div class="blocks-wrapper">
+
+    <div class="blocks">
+
+        {% for block in section_navigation %}
+
+            <a
+                href="{% url 'checklists:section' visit.id block.order %}"
+                class="
+                    block
+                    {% if block.is_current %}current{% endif %}
+                    {% if block.is_complete %}complete{% endif %}
+                "
+                {% if block.is_current %}
+                    id="current-block-tab"
+                {% endif %}
+            >
+
+                <div class="block-number">
+                    Блок {{ block.order }}
+                </div>
+
+                <div class="block-title">
+                    {{ block.title }}
+                </div>
+
+                <div class="block-stats">
+
+                    <span
+                        {% if block.is_current %}
+                            id="current-block-progress"
+                        {% endif %}
+                    >
+                        {{ block.completed }}/{{ block.total }}
+                    </span>
+
+                    <span
+                        {% if block.is_current %}
+                            id="current-block-score"
+                        {% endif %}
+                    >
+                        {{ block.score }}/{{ block.max_score }}
+                    </span>
+
+                </div>
+
+            </a>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
 
 <main>
 
@@ -285,138 +1007,248 @@
         ← Карточка посещения
     </a>
 
-    <div class="section-meta">
-        Блок {{ section_number }} из {{ section_count }}
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-meta">
+
+                Блок
+                {{ section_number }}
+                из
+                {{ section_count }}
+
+                ·
+
+                Заполнено:
+
+                <span id="live-completed">
+                    {{ completed }}
+                </span>
+
+                из
+
+                {{ total }}
+
+            </div>
+
+
+            <h1>
+                {{ section.title }}
+            </h1>
+
+        </div>
+
+
+        <div class="section-score">
+
+            <div class="section-score-value">
+
+                <span id="live-section-score">
+                    {{ current_section_score }}
+                </span>
+
+                /
+
+                {{ current_section_max }}
+
+            </div>
+
+            <div class="section-score-label">
+                баллы блока
+            </div>
+
+        </div>
+
     </div>
 
-    <h1>
-        {{ section.title }}
-    </h1>
 
-    <div class="filled">
-        Заполнено критериев:
-        {{ completed }} из {{ total }}
+
+    <div
+        id="draft-status"
+        class="draft-status server"
+    >
+
+        <span class="draft-dot"></span>
+
+        <span id="draft-status-text">
+            Все изменения сохранены на сервере
+        </span>
+
     </div>
+
+
 
     {% if messages %}
 
         <div class="messages">
 
             {% for message in messages %}
+
                 <div class="message">
                     {{ message }}
                 </div>
+
             {% endfor %}
 
         </div>
 
     {% endif %}
 
-    <form method="post">
+
+
+    <form
+        method="post"
+        id="checklist-form"
+    >
 
         {% csrf_token %}
 
+
         {% for criterion in criteria %}
 
-            <div class="criterion">
+            <div
+                class="criterion"
+                data-criterion-id="{{ criterion.id }}"
+            >
 
-                <h2>
-                    {{ criterion.title }}
-                </h2>
+                <div class="criterion-header">
+
+                    <h2>
+                        {{ criterion.title }}
+                    </h2>
+
+                    <div class="criterion-state">
+                        не заполнено
+                    </div>
+
+                </div>
+
 
 
                 {% if criterion.teacher_options %}
 
-                    <div class="side-title">
-                        Деятельность преподавателя
+                    <div
+                        class="side-group"
+                        data-side="teacher"
+                    >
+
+                        <div class="side-title">
+                            Деятельность преподавателя
+                        </div>
+
+
+                        {% for option in criterion.teacher_options %}
+
+                            <label class="option">
+
+                                <input
+                                    type="radio"
+
+                                    name="teacher_{{ criterion.id }}"
+
+                                    value="{{ option.id }}"
+
+                                    data-score="{{ option.score }}"
+
+                                    {% if criterion.current_answer.teacher_option_id == option.id %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <span class="option-content">
+
+                                    <span class="points">
+                                        {{ option.score }}
+                                    </span>
+
+                                    <span class="option-text">
+                                        {{ option.text }}
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
                     </div>
 
-                    {% for option in criterion.teacher_options %}
-
-                        <label class="option">
-
-                            <input
-                                type="radio"
-                                name="teacher_{{ criterion.id }}"
-                                value="{{ option.id }}"
-
-                                {% if criterion.current_answer.teacher_option_id == option.id %}
-                                    checked
-                                {% endif %}
-                            >
-
-                            <span class="option-content">
-
-                                <span class="points">
-                                    {{ option.score }}
-                                </span>
-
-                                <span class="option-text">
-                                    {{ option.text }}
-                                </span>
-
-                            </span>
-
-                        </label>
-
-                    {% endfor %}
-
                 {% endif %}
+
 
 
                 {% if criterion.student_options %}
 
-                    <div class="side-title">
-                        Деятельность студента
+                    <div
+                        class="side-group"
+                        data-side="student"
+                    >
+
+                        <div class="side-title">
+                            Деятельность студента
+                        </div>
+
+
+                        {% for option in criterion.student_options %}
+
+                            <label class="option">
+
+                                <input
+                                    type="radio"
+
+                                    name="student_{{ criterion.id }}"
+
+                                    value="{{ option.id }}"
+
+                                    data-score="{{ option.score }}"
+
+                                    {% if criterion.current_answer.student_option_id == option.id %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <span class="option-content">
+
+                                    <span class="points">
+                                        {{ option.score }}
+                                    </span>
+
+                                    <span class="option-text">
+                                        {{ option.text }}
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
                     </div>
-
-                    {% for option in criterion.student_options %}
-
-                        <label class="option">
-
-                            <input
-                                type="radio"
-                                name="student_{{ criterion.id }}"
-                                value="{{ option.id }}"
-
-                                {% if criterion.current_answer.student_option_id == option.id %}
-                                    checked
-                                {% endif %}
-                            >
-
-                            <span class="option-content">
-
-                                <span class="points">
-                                    {{ option.score }}
-                                </span>
-
-                                <span class="option-text">
-                                    {{ option.text }}
-                                </span>
-
-                            </span>
-
-                        </label>
-
-                    {% endfor %}
 
                 {% endif %}
 
 
+
                 {% if criterion.comment_hint %}
 
-                    <div class="side-title">
-                        Комментарий эксперта
-                    </div>
+                    <div class="comment-area">
 
-                    <div class="hint">
-                        {{ criterion.comment_hint }}
-                    </div>
+                        <div class="side-title">
+                            Комментарий эксперта
+                        </div>
 
-                    <textarea
-                        name="comment_{{ criterion.id }}"
-                        placeholder="Комментарий..."
-                    >{% if criterion.current_answer %}{{ criterion.current_answer.comment }}{% endif %}</textarea>
+                        <div class="hint">
+                            {{ criterion.comment_hint }}
+                        </div>
+
+                        <textarea
+                            name="comment_{{ criterion.id }}"
+                            placeholder="Комментарий..."
+                        >{% if criterion.current_answer %}{{ criterion.current_answer.comment }}{% endif %}</textarea>
+
+                    </div>
 
                 {% endif %}
 
@@ -425,15 +1257,17 @@
         {% endfor %}
 
 
+
         <div class="actions">
 
             <div class="actions-inner">
 
-                <div>
+                <div class="action-group">
 
                     {% if previous_order %}
 
                         <button
+                            type="submit"
                             class="secondary"
                             name="action"
                             value="previous"
@@ -446,19 +1280,22 @@
                 </div>
 
 
-                <div>
+                <div class="action-group">
 
                     <button
-                        class="secondary"
+                        type="submit"
+                        class="secondary hide-small"
                         name="action"
                         value="save"
                     >
                         Сохранить
                     </button>
 
+
                     {% if next_order %}
 
                         <button
+                            type="submit"
                             class="primary"
                             name="action"
                             value="next"
@@ -469,6 +1306,7 @@
                     {% else %}
 
                         <button
+                            type="submit"
                             class="finish"
                             name="action"
                             value="finish"
@@ -488,5 +1326,707 @@
 
 </main>
 
+
+
+<script>
+
+(() => {
+
+    const body = document.body;
+
+    const form = document.getElementById(
+        "checklist-form"
+    );
+
+
+    const visitId =
+        body.dataset.visitId;
+
+    const sectionOrder =
+        body.dataset.sectionOrder;
+
+
+    const draftKey =
+        `monitoring:visit:${visitId}:section:${sectionOrder}`;
+
+
+    const serverUpdatedRaw =
+        body.dataset.serverUpdated;
+
+    const serverUpdated =
+        Date.parse(
+            serverUpdatedRaw
+        ) || 0;
+
+
+    const serverTotalScore =
+        Number(
+            body.dataset.serverTotalScore
+        ) || 0;
+
+
+    const serverCurrentScore =
+        Number(
+            body.dataset.serverCurrentScore
+        ) || 0;
+
+
+    const serverCompleted =
+        Number(
+            body.dataset.serverCompleted
+        ) || 0;
+
+
+    const serverCurrentCompleted =
+        Number(
+            body.dataset.serverCurrentCompleted
+        ) || 0;
+
+
+    const totalCriteria =
+        Number(
+            body.dataset.totalCriteria
+        ) || 0;
+
+
+
+    const liveTotalScore =
+        document.getElementById(
+            "live-total-score"
+        );
+
+
+    const liveSectionScore =
+        document.getElementById(
+            "live-section-score"
+        );
+
+
+    const liveCompleted =
+        document.getElementById(
+            "live-completed"
+        );
+
+
+    const overallProgressBar =
+        document.getElementById(
+            "overall-progress-bar"
+        );
+
+
+    const currentBlockProgress =
+        document.getElementById(
+            "current-block-progress"
+        );
+
+
+    const currentBlockScore =
+        document.getElementById(
+            "current-block-score"
+        );
+
+
+    const currentBlockTab =
+        document.getElementById(
+            "current-block-tab"
+        );
+
+
+    const draftStatus =
+        document.getElementById(
+            "draft-status"
+        );
+
+
+    const draftStatusText =
+        document.getElementById(
+            "draft-status-text"
+        );
+
+
+
+    function setDraftStatus(
+        type,
+        text
+    ) {
+
+        draftStatus.classList.remove(
+            "server",
+            "local",
+            "offline"
+        );
+
+        draftStatus.classList.add(
+            type
+        );
+
+        draftStatusText.textContent =
+            text;
+    }
+
+
+
+    function getCurrentValues() {
+
+        const values = {};
+
+
+        form
+            .querySelectorAll(
+                'input[type="radio"]:checked'
+            )
+            .forEach(
+                input => {
+
+                    values[
+                        input.name
+                    ] = input.value;
+
+                }
+            );
+
+
+        form
+            .querySelectorAll(
+                "textarea"
+            )
+            .forEach(
+                textarea => {
+
+                    values[
+                        textarea.name
+                    ] = textarea.value;
+
+                }
+            );
+
+
+        return values;
+
+    }
+
+
+
+    function saveDraft() {
+
+        const payload = {
+
+            savedAt:
+                Date.now(),
+
+            values:
+                getCurrentValues(),
+
+        };
+
+
+        try {
+
+            localStorage.setItem(
+                draftKey,
+                JSON.stringify(
+                    payload
+                )
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Не удалось сохранить локальный черновик",
+                error
+            );
+
+        }
+
+
+        if (
+            navigator.onLine
+        ) {
+
+            setDraftStatus(
+                "local",
+                "Черновик сохранён на этом устройстве"
+            );
+
+        } else {
+
+            setDraftStatus(
+                "offline",
+                "Нет сети — черновик сохранён на этом устройстве"
+            );
+
+        }
+
+    }
+
+
+
+    function restoreDraft() {
+
+        let payload = null;
+
+
+        try {
+
+            payload = JSON.parse(
+                localStorage.getItem(
+                    draftKey
+                )
+            );
+
+        } catch (error) {
+
+            localStorage.removeItem(
+                draftKey
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !payload
+            || !payload.savedAt
+            || !payload.values
+        ) {
+            return;
+        }
+
+
+        /*
+         * Если серверная версия новее,
+         * значит черновик уже был
+         * успешно сохранён на сервер.
+         */
+
+        if (
+            payload.savedAt
+            <= serverUpdated
+        ) {
+
+            localStorage.removeItem(
+                draftKey
+            );
+
+            return;
+        }
+
+
+        Object.entries(
+            payload.values
+        )
+        .forEach(
+            ([name, value]) => {
+
+                const elements =
+                    form.elements[
+                        name
+                    ];
+
+
+                if (!elements) {
+                    return;
+                }
+
+
+                if (
+                    elements instanceof
+                    RadioNodeList
+                ) {
+
+                    elements.value =
+                        value;
+
+                    return;
+                }
+
+
+                if (
+                    elements.type
+                    === "radio"
+                ) {
+
+                    elements.checked =
+                        elements.value
+                        === value;
+
+                    return;
+                }
+
+
+                elements.value =
+                    value;
+
+            }
+        );
+
+
+        setDraftStatus(
+            navigator.onLine
+                ? "local"
+                : "offline",
+
+            navigator.onLine
+
+                ? "Восстановлен несохранённый черновик с этого устройства"
+
+                : "Нет сети — восстановлен локальный черновик"
+        );
+
+    }
+
+
+
+    function criterionComplete(
+        card
+    ) {
+
+        const teacherGroup =
+            card.querySelector(
+                '[data-side="teacher"]'
+            );
+
+
+        const studentGroup =
+            card.querySelector(
+                '[data-side="student"]'
+            );
+
+
+        const teacherOk =
+            !teacherGroup
+            ||
+            teacherGroup.querySelector(
+                'input[type="radio"]:checked'
+            );
+
+
+        const studentOk =
+            !studentGroup
+            ||
+            studentGroup.querySelector(
+                'input[type="radio"]:checked'
+            );
+
+
+        return Boolean(
+            teacherOk
+            && studentOk
+        );
+
+    }
+
+
+
+    function calculateCurrentSection() {
+
+        let score = 0;
+
+        let completed = 0;
+
+
+        const cards =
+            form.querySelectorAll(
+                ".criterion"
+            );
+
+
+        cards.forEach(
+            card => {
+
+                card
+                    .querySelectorAll(
+                        'input[type="radio"]:checked'
+                    )
+                    .forEach(
+                        input => {
+
+                            score +=
+                                Number(
+                                    input.dataset.score
+                                ) || 0;
+
+                        }
+                    );
+
+
+                const state =
+                    card.querySelector(
+                        ".criterion-state"
+                    );
+
+
+                if (
+                    criterionComplete(
+                        card
+                    )
+                ) {
+
+                    completed += 1;
+
+                    card.classList.add(
+                        "complete"
+                    );
+
+                    if (state) {
+
+                        state.textContent =
+                            "✓ заполнено";
+
+                    }
+
+                } else {
+
+                    card.classList.remove(
+                        "complete"
+                    );
+
+                    if (state) {
+
+                        state.textContent =
+                            "не заполнено";
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        return {
+            score,
+            completed,
+            total:
+                cards.length,
+        };
+
+    }
+
+
+
+    function updateLiveState() {
+
+        const current =
+            calculateCurrentSection();
+
+
+        /*
+         * Общий балл =
+         * серверный общий балл
+         * - сохранённый балл текущего блока
+         * + текущий локальный балл блока.
+         */
+
+        const totalScore =
+            serverTotalScore
+            - serverCurrentScore
+            + current.score;
+
+
+        const completed =
+            serverCompleted
+            - serverCurrentCompleted
+            + current.completed;
+
+
+        liveTotalScore.textContent =
+            totalScore;
+
+
+        liveSectionScore.textContent =
+            current.score;
+
+
+        liveCompleted.textContent =
+            completed;
+
+
+        if (
+            currentBlockProgress
+        ) {
+
+            currentBlockProgress.textContent =
+                `${current.completed}/${current.total}`;
+
+        }
+
+
+        if (
+            currentBlockScore
+        ) {
+
+            currentBlockScore.textContent =
+                `${current.score}/{{ current_section_max }}`;
+
+        }
+
+
+        if (
+            currentBlockTab
+        ) {
+
+            currentBlockTab.classList.toggle(
+                "complete",
+                current.completed
+                === current.total
+                && current.total > 0
+            );
+
+        }
+
+
+        const percent =
+            totalCriteria > 0
+
+                ? Math.round(
+                    completed
+                    / totalCriteria
+                    * 100
+                )
+
+                : 0;
+
+
+        overallProgressBar.style.width =
+            `${percent}%`;
+
+    }
+
+
+
+    /*
+     * Восстанавливаем локальный черновик
+     * до первого пересчёта.
+     */
+
+    restoreDraft();
+
+    updateLiveState();
+
+
+
+    /*
+     * Любое изменение сразу:
+     *
+     * 1. отражается в балле;
+     * 2. отражается в прогрессе;
+     * 3. сохраняется локально.
+     */
+
+    form.addEventListener(
+        "change",
+        event => {
+
+            if (
+                event.target.matches(
+                    'input[type="radio"]'
+                )
+            ) {
+
+                updateLiveState();
+
+                saveDraft();
+
+            }
+
+        }
+    );
+
+
+
+    let textareaTimer = null;
+
+
+    form.addEventListener(
+        "input",
+        event => {
+
+            if (
+                !event.target.matches(
+                    "textarea"
+                )
+            ) {
+                return;
+            }
+
+
+            clearTimeout(
+                textareaTimer
+            );
+
+
+            textareaTimer =
+                setTimeout(
+                    () => {
+
+                        saveDraft();
+
+                    },
+                    350
+                );
+
+        }
+    );
+
+
+
+    /*
+     * Если сеть пропала —
+     * пользователь понимает,
+     * что черновик всё равно
+     * хранится на устройстве.
+     */
+
+    window.addEventListener(
+        "offline",
+        () => {
+
+            setDraftStatus(
+                "offline",
+                "Нет сети — изменения сохраняются на этом устройстве"
+            );
+
+        }
+    );
+
+
+    window.addEventListener(
+        "online",
+        () => {
+
+            const localDraft =
+                localStorage.getItem(
+                    draftKey
+                );
+
+
+            if (localDraft) {
+
+                setDraftStatus(
+                    "local",
+                    "Сеть восстановлена — черновик сохранён на устройстве"
+                );
+
+            } else {
+
+                setDraftStatus(
+                    "server",
+                    "Все изменения сохранены на сервере"
+                );
+
+            }
+
+        }
+    );
+
+
+})();
+
+</script>
+
+
 </body>
+
 </html>
