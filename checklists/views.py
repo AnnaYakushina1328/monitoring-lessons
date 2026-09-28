@@ -278,50 +278,35 @@ def checklist_start(
             "этого посещения."
         )
 
-    # ОУП-шаблон, который сейчас реализован,
-    # предназначен только для очного занятия.
-    if visit.format != Visit.Format.IN_PERSON:
-        messages.error(
-            request,
-            (
-                "Для онлайн-занятия требуется отдельный "
-                "онлайн-чек-лист. Чек-лист ОУП предназначен "
-                "для очного занятия."
-            ),
-        )
-
-        return redirect(
-            "visits:detail",
-            pk=visit.pk,
-        )
+    template_code = (
+        "online"
+        if visit.format == Visit.Format.ONLINE
+        else "oup"
+    )
 
     template = get_object_or_404(
         ChecklistTemplate,
-        code="oup",
+        code=template_code,
         is_active=True,
     )
 
-    assessment, created = (
-        Assessment.objects.get_or_create(
-            visit=visit,
-            defaults={
-                "template": template,
-                "updated_by": request.user,
-            },
-        )
-    )
+    try:
+        assessment = visit.assessment
 
-    # Защита от ситуации, когда к посещению уже
-    # привязан другой тип чек-листа.
-    if (
-        not created
-        and assessment.template_id != template.id
-    ):
+    except Assessment.DoesNotExist:
+        assessment = Assessment.objects.create(
+            visit=visit,
+            template=template,
+            updated_by=request.user,
+        )
+
+    if assessment.template_id != template.id:
         messages.error(
             request,
             (
-                "К этому посещению уже привязан "
-                "другой шаблон чек-листа."
+                "К этому посещению привязан чек-лист "
+                "другого формата. Его необходимо "
+                "сбросить перед началом нового оценивания."
             ),
         )
 
@@ -339,7 +324,7 @@ def checklist_start(
     if first_section is None:
         messages.error(
             request,
-            "В шаблоне чек-листа отсутствуют блоки.",
+            "В шаблоне отсутствуют блоки.",
         )
 
         return redirect(
@@ -431,10 +416,15 @@ def assessment_result(
         section.result_max = section_max
         section.result_criteria = criteria
 
+    expected_template_code = (
+        "online"
+        if visit.format == Visit.Format.ONLINE
+        else "oup"
+    )
+
     template_mismatch = (
-        visit.format
-        != Visit.Format.IN_PERSON
-        and assessment.template.code == "oup"
+        assessment.template.code
+        != expected_template_code
     )
 
     context = {

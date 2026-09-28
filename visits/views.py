@@ -36,16 +36,22 @@ def visit_detail(request, pk):
     except Exception:
         assessment = None
 
-    checklist_available = (
-        visit.format
-        == Visit.Format.IN_PERSON
+    expected_template_code = (
+        "online"
+        if visit.format == Visit.Format.ONLINE
+        else "oup"
     )
 
     assessment_mismatch = (
         assessment is not None
-        and visit.format
-        != Visit.Format.IN_PERSON
-        and assessment.template.code == "oup"
+        and assessment.template.code
+        != expected_template_code
+    )
+
+    checklist_label = (
+        "Онлайн-чек-лист"
+        if visit.format == Visit.Format.ONLINE
+        else "Чек-лист ОУП"
     )
 
     return render(
@@ -54,8 +60,8 @@ def visit_detail(request, pk):
         {
             "visit": visit,
             "assessment": assessment,
-            "checklist_available": checklist_available,
             "assessment_mismatch": assessment_mismatch,
+            "checklist_label": checklist_label,
         },
     )
 

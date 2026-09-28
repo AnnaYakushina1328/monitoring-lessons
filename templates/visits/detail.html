@@ -115,6 +115,15 @@
             font-size: 13px;
         }
 
+        .format {
+            display: inline-block;
+            margin-left: 6px;
+            background: #eef4ff;
+            border-radius: 8px;
+            padding: 6px 9px;
+            font-size: 13px;
+        }
+
         .button {
             display: inline-block;
             margin-top: 18px;
@@ -127,31 +136,13 @@
         }
 
         .warning {
-            margin-bottom: 25px;
             padding: 15px 17px;
             border: 1px solid #fecdca;
             border-radius: 11px;
             background: #fef3f2;
             color: #b42318;
             line-height: 1.5;
-        }
-
-        .info {
-            padding: 15px 17px;
-            border-radius: 11px;
-            background: #f2f4f7;
-            color: #475467;
-            line-height: 1.55;
-            margin-top: 16px;
-        }
-
-        .invalid-result {
-            margin-top: 18px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #fff4e5;
-            color: #93370d;
-            line-height: 1.5;
+            margin-top: 15px;
         }
 
         @media (max-width: 800px) {
@@ -173,32 +164,24 @@
 <body>
 
 <header>
-
     <div class="header-inner">
-
         <a
             class="brand"
             href="/"
         >
             Мониторинг учебных занятий
         </a>
-
     </div>
-
 </header>
 
 <main>
 
     {% if messages %}
-
         {% for message in messages %}
-
             <div class="warning">
                 {{ message }}
             </div>
-
         {% endfor %}
-
     {% endif %}
 
 
@@ -208,7 +191,6 @@
     >
         ← Все посещения
     </a>
-
 
     <h1>
         {{ visit.teacher.full_name }}
@@ -227,96 +209,54 @@
 
             <div class="data">
 
-                <div class="label">
-                    Преподаватель
-                </div>
-
+                <div class="label">Преподаватель</div>
                 <div class="value">
                     {{ visit.teacher.full_name }}
                 </div>
 
-
-                <div class="label">
-                    Дата
-                </div>
-
+                <div class="label">Дата</div>
                 <div class="value">
                     {{ visit.date|date:"d.m.Y" }}
                 </div>
 
-
-                <div class="label">
-                    Занятие
-                </div>
-
+                <div class="label">Занятие</div>
                 <div class="value">
                     {{ visit.lesson_number|default:"—" }}
                 </div>
 
-
-                <div class="label">
-                    Дисциплина
-                </div>
-
+                <div class="label">Дисциплина</div>
                 <div class="value">
                     {{ visit.subject }}
                 </div>
 
-
-                <div class="label">
-                    Группа
-                </div>
-
+                <div class="label">Группа</div>
                 <div class="value">
                     {{ visit.group|default:"—" }}
                 </div>
 
-
-                <div class="label">
-                    Аудитория
-                </div>
-
+                <div class="label">Аудитория</div>
                 <div class="value">
                     {{ visit.room|default:"—" }}
                 </div>
 
-
-                <div class="label">
-                    Тема
-                </div>
-
+                <div class="label">Тема</div>
                 <div class="value">
                     {{ visit.topic|default:"—" }}
                 </div>
 
-
-                <div class="label">
-                    Формат
-                </div>
-
+                <div class="label">Формат</div>
                 <div class="value">
                     {{ visit.get_format_display }}
                 </div>
 
-
-                <div class="label">
-                    Эксперты
-                </div>
-
+                <div class="label">Эксперты</div>
                 <div class="value">
-
                     {% for auditor in visit.auditors.all %}
-
                         {{ auditor }}
-
-                        {% if not forloop.last %}
-                            ,
-                        {% endif %}
-
+                        {% if not forloop.last %}, {% endif %}
                     {% empty %}
                         —
                     {% endfor %}
-
                 </div>
 
             </div>
@@ -327,53 +267,33 @@
         <div class="card">
 
             <h2 style="margin-top:0;">
-                Оценивание занятия
+                {{ checklist_label }}
             </h2>
+
+            <span class="format">
+                {{ visit.get_format_display }}
+            </span>
 
 
             {% if assessment_mismatch %}
 
                 <div class="warning">
-                    Для этого онлайн-занятия ранее был
-                    создан офлайн-чек-лист ОУП.
-                    Такой результат методически
-                    некорректен и не должен использоваться.
-                </div>
+                    К этому посещению привязан чек-лист
+                    другого формата.
 
-                <div class="invalid-result">
-                    Сохранённый тестовый результат:
-                    <strong>
-                        {{ assessment.total_score }}
-                        /
-                        {{ assessment.template.max_score }}
-                    </strong>
-                </div>
-
-                <div class="info">
-                    Для онлайн-занятий будет подключён
-                    отдельный онлайн-шаблон чек-листа.
-                </div>
-
-
-            {% elif not checklist_available %}
-
-                <div class="status">
-                    Онлайн
-                </div>
-
-                <div class="info">
-                    Для онлайн-занятия требуется
-                    отдельный онлайн-чек-лист.
-
-                    Текущий чек-лист ОУП предназначен
-                    только для очных занятий.
+                    Это старые тестовые данные.
+                    Их нужно сбросить перед новым заполнением.
                 </div>
 
 
             {% elif assessment %}
 
-                <div class="status">
-                    {{ assessment.get_status_display }}
+                <div style="margin-top:15px;">
+
+                    <span class="status">
+                        {{ assessment.get_status_display }}
+                    </span>
+
                 </div>
 
                 <div class="score">
@@ -385,13 +305,9 @@
                 <div class="level">
 
                     {% if assessment.status == "completed" and assessment.level %}
-
                         {{ assessment.level.name }}
-
                     {% else %}
-
                         Текущий результат
-
                     {% endif %}
 
                 </div>
@@ -424,17 +340,18 @@
                     style="
                         color:#667085;
                         line-height:1.5;
+                        margin-top:18px;
                     "
                 >
-                    Оценивание по чек-листу
-                    ещё не начато.
+                    Для этого посещения будет автоматически
+                    использован подходящий шаблон оценивания.
                 </p>
 
                 <a
                     class="button"
                     href="{% url 'checklists:start' visit.id %}"
                 >
-                    Начать чек-лист ОУП
+                    Начать чек-лист
                 </a>
 
             {% endif %}
