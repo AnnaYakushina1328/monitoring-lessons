@@ -343,9 +343,7 @@ def checklist_start(
         )
 
     template_code = (
-        "online"
-        if visit.format == Visit.Format.ONLINE
-        else "oup"
+        visit.checklist_code
     )
 
     template = get_object_or_404(
@@ -411,8 +409,13 @@ def assessment_result(
 ):
     visit = get_object_or_404(
         Visit.objects
-        .select_related("teacher")
-        .prefetch_related("auditors"),
+        .select_related(
+            "teacher",
+        )
+        .prefetch_related(
+            "auditors",
+            "methodists",
+        ),
         pk=visit_id,
     )
 
@@ -426,8 +429,12 @@ def assessment_result(
         )
 
     assessment = get_object_or_404(
-        Assessment.objects.select_related(
-            "template"
+        Assessment.objects
+        .select_related(
+            "template",
+        )
+        .prefetch_related(
+            "template__levels",
         ),
         visit=visit,
     )
@@ -449,6 +456,7 @@ def assessment_result(
     )
 
     for section in sections:
+
         section_score = 0
         section_max = 0
 
@@ -457,6 +465,7 @@ def assessment_result(
         )
 
         for criterion in criteria:
+
             answer = answers.get(
                 criterion.pk
             )
@@ -468,24 +477,78 @@ def assessment_result(
             score = 0
 
             if answer:
+
                 if answer.teacher_option:
+
                     score += (
                         answer.teacher_option.score
                     )
 
                 if answer.student_option:
+
                     score += (
                         answer.student_option.score
                     )
 
-            criterion.answer_score = score
 
-            criterion.max_possible_score = (
+            maximum = (
                 criterion.max_score
             )
 
+
+            criterion.answer_score = (
+                score
+            )
+
+            criterion.max_possible_score = (
+                maximum
+            )
+
+
+            # ================================================
+            # СВЕТОФОР КРИТЕРИЯ
+            # ================================================
+
+            complete = criterion_is_complete(
+                criterion,
+                answer,
+            )
+
+
+            if not complete:
+
+                criterion.result_state = (
+                    "neutral"
+                )
+
+            elif maximum <= 0:
+
+                criterion.result_state = (
+                    "neutral"
+                )
+
+            elif score == 0:
+
+                criterion.result_state = (
+                    "red"
+                )
+
+            elif score >= maximum:
+
+                criterion.result_state = (
+                    "green"
+                )
+
+            else:
+
+                criterion.result_state = (
+                    "yellow"
+                )
+
+
             section_score += score
-            section_max += criterion.max_score
+            section_max += maximum
+
 
         section.result_score = (
             section_score
@@ -499,24 +562,178 @@ def assessment_result(
             criteria
         )
 
-    expected_template_code = (
-        "online"
-        if visit.format == Visit.Format.ONLINE
-        else "oup"
+
+    # ========================================================
+    # ШКАЛА УРОВНЕЙ
+    # ========================================================
+
+    levels = list(
+        assessment.template.levels
+        .order_by(
+            "min_score"
+        )
     )
+
+
+    def level_key(level):
+
+        name = (
+            level.name.lower()
+        )
+
+        if name.startswith(
+            "высок"
+        ):
+            return "high"
+
+        if name.startswith(
+            "достат"
+        ):
+            return "sufficient"
+
+        if name.startswith(
+            "удовлетвор"
+        ):
+            return "satisfactory"
+
+        if name.startswith(
+            "низк"
+        ):
+            return "low"
+
+        return "unknown"
+
+
+    level_scale = []
+
+
+    for index, level in enumerate(
+        levels
+    ):
+
+        if index + 1 < len(levels):
+
+            next_min = (
+                levels[
+                    index + 1
+                ].min_score
+            )
+
+        else:
+
+            next_min = (
+                assessment.template.max_score
+            )
+
+
+        span = max(
+            next_min
+            - level.min_score,
+            1,
+        )
+
+
+        level_scale.append(
+            {
+                "name": level.name,
+
+                "key": level_key(
+                    level
+                ),
+
+                "min_score": (
+                    level.min_score
+                ),
+
+                "max_score": (
+                    level.max_score
+                ),
+
+                "span": span,
+            }
+        )
+
+
+    # ========================================================
+    # ТОЧКИ-ПОРОГИ НА ШКАЛЕ
+    # ========================================================
+
+    marker_values = {
+        0,
+        assessment.template.max_score,
+    }
+
+
+    for level in levels:
+
+        if level.min_score > 0:
+
+            marker_values.add(
+                level.min_score
+            )
+
+
+    marker_values = sorted(
+        marker_values
+    )
+
+
+    level_markers = []
+
+
+    for index, value in enumerate(
+        marker_values
+    ):
+
+        level_markers.append(
+            {
+                "value": value,
+
+                "is_first": (
+                    index == 0
+                ),
+
+                "is_last": (
+                    index
+                    == len(
+                        marker_values
+                    ) - 1
+                ),
+            }
+        )
+
+
+    expected_template_code = (
+        visit.checklist_code
+    )
+
 
     template_mismatch = (
         assessment.template.code
         != expected_template_code
     )
 
+
     context = {
+
         "visit": visit,
+
         "assessment": assessment,
+
         "sections": sections,
+
+        "level_scale": (
+            level_scale
+        ),
+
+        "level_markers": (
+            level_markers
+        ),
+
         "template_mismatch": (
             template_mismatch
         ),
+
         "can_edit": (
             can_edit_visit(
                 request.user,
@@ -525,6 +742,7 @@ def assessment_result(
             and not template_mismatch
         ),
     }
+
 
     return render(
         request,

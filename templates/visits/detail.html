@@ -140,11 +140,11 @@
 
 
                 <div class="detail-label">
-                    Номер занятия
+                    Пара
                 </div>
 
                 <div class="detail-value">
-                    {{ visit.lesson_number|default:"—" }}
+                    {{ visit.lesson_label }}
                 </div>
 
 
@@ -214,6 +214,27 @@
                 </div>
 
 
+                <div class="detail-label">
+                    Методисты
+                </div>
+
+                <div class="detail-value">
+
+                    {% for methodist in visit.methodists.all %}
+
+                        {{ methodist }}
+
+                        {% if not forloop.last %}
+                            ,
+                        {% endif %}
+
+                    {% empty %}
+                        —
+                    {% endfor %}
+
+                </div>
+
+
                 {% if visit.purpose %}
 
                     <div class="detail-label">
@@ -267,11 +288,7 @@
 
                 <div class="notice notice-warning">
 
-                    К этому посещению привязан
-                    чек-лист другого формата.
-
-                    Это старые тестовые данные,
-                    которые необходимо сбросить.
+                    Тип чек-листа не совпадает с ранее созданным оцениванием.
 
                 </div>
 

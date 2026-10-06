@@ -81,7 +81,7 @@
                 · {{ visit.get_format_display }}
 
                 {% if visit.lesson_number %}
-                    · {{ visit.lesson_number }} занятие
+                    · {{ visit.lesson_label }}
                 {% endif %}
 
             </div>
@@ -147,6 +147,148 @@
 
     </section>
 
+
+
+    {% if level_scale %}
+
+        <section class="result-threshold-card">
+
+
+            <div class="result-threshold-header">
+
+                <div>
+
+                    <div class="result-threshold-title">
+                        Шкала результата
+                    </div>
+
+                    <div class="result-threshold-caption">
+                        Пороговые значения уровней эффективности
+                    </div>
+
+                </div>
+
+
+                <strong>
+
+                    {{ assessment.total_score }}
+                    /
+                    {{ assessment.template.max_score }}
+
+                </strong>
+
+            </div>
+
+
+            {% widthratio assessment.total_score assessment.template.max_score 100 as result_position %}
+
+
+            <div class="result-threshold-wrap">
+
+
+                <div class="result-threshold-scale">
+
+
+                    <div class="result-threshold-segments">
+
+                        {% for level in level_scale %}
+
+                            <div
+                                class="
+                                    result-threshold-segment
+                                    scale-{{ level.key }}
+                                "
+                                style="flex: {{ level.span }} 0 0;"
+                            ></div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <div
+                        class="result-threshold-pointer"
+                        style="left: {{ result_position }}%;"
+                    >
+
+                        <span></span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="result-threshold-markers">
+
+                    {% for marker in level_markers %}
+
+                        {% widthratio marker.value assessment.template.max_score 100 as marker_position %}
+
+                        <div
+                            class="
+                                result-threshold-marker
+
+                                {% if marker.is_first %}
+                                    first
+                                {% endif %}
+
+                                {% if marker.is_last %}
+                                    last
+                                {% endif %}
+                            "
+                            style="left: {{ marker_position }}%;"
+                        >
+
+                            <i></i>
+
+                            <b>
+                                {{ marker.value }}
+                            </b>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="result-threshold-legend">
+
+                {% for level in level_scale %}
+
+                    <div class="result-threshold-legend-item">
+
+                        <span
+                            class="
+                                result-threshold-dot
+                                scale-{{ level.key }}
+                            "
+                        ></span>
+
+                        <span>
+                            {{ level.name }}
+                        </span>
+
+                        <strong>
+                            {{ level.min_score }}–{{ level.max_score }}
+                        </strong>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        </section>
+
+    {% endif %}
 
 
     <div class="result-section-title">
@@ -237,7 +379,29 @@
 
 
 
+
+    <div class="criterion-traffic-legend">
+
+        <span class="criterion-traffic-item green">
+            <i></i>
+            Максимальный балл
+        </span>
+
+        <span class="criterion-traffic-item yellow">
+            <i></i>
+            Выполнено частично
+        </span>
+
+        <span class="criterion-traffic-item red">
+            <i></i>
+            0 баллов
+        </span>
+
+    </div>
+
+
     <section class="result-details">
+
 
 
         {% for section in sections %}
@@ -289,7 +453,12 @@
                     {% for criterion in section.result_criteria %}
 
 
-                        <div class="result-criterion">
+                        <div
+                            class="
+                                result-criterion
+                                result-criterion-{{ criterion.result_state }}
+                            "
+                        >
 
 
                             <div class="result-criterion-header">

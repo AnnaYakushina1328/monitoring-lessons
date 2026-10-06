@@ -2127,3 +2127,16 @@ input[type="checkbox"] {
 
 }
 
+/* Цель посещения */
+
+#id_purpose {
+    width: 100%;
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+

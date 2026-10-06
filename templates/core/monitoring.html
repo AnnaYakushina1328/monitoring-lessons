@@ -1,0 +1,705 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+    Мониторинг · Мониторинг качества занятий
+{% endblock %}
+
+
+{% block extra_head %}
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/monitoring.css' %}"
+    >
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<main class="page">
+
+
+    <div class="page-toolbar">
+
+        <a
+            class="page-back"
+            href="{% url 'core:home' %}"
+        >
+            ← Главная
+        </a>
+
+    </div>
+
+
+
+    <div class="page-title-row">
+
+        <div class="page-title">
+
+            <h1>
+                Мониторинг
+            </h1>
+
+            <p>
+                Сводная картина по завершённым посещениям.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         DASHBOARD
+         =================================================== -->
+
+    <section class="monitoring-stats">
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Завершено оцениваний
+            </div>
+
+            <div class="monitoring-stat-value">
+                {{ total_completed }}
+            </div>
+
+            <div class="monitoring-stat-note">
+                в текущей выборке
+            </div>
+
+        </article>
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Средний результат
+            </div>
+
+            <div class="monitoring-stat-value">
+                {{ average_percent }}%
+            </div>
+
+            <div class="monitoring-stat-note">
+                от максимума своей формы
+            </div>
+
+        </article>
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Преподаватели
+            </div>
+
+            <div class="monitoring-stat-value">
+                {{ teacher_count }}
+            </div>
+
+            <div class="monitoring-stat-note">
+                имеют завершённые результаты
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- ===================================================
+         FILTER
+         =================================================== -->
+
+    <div class="monitoring-toolbar">
+
+        <div class="monitoring-filters">
+
+
+            <a
+                class="
+                    monitoring-filter
+                    {% if format_filter == 'all' %}
+                        active
+                    {% endif %}
+                "
+                href="{% url 'core:monitoring' %}?format=all"
+            >
+                Все
+            </a>
+
+
+            <a
+                class="
+                    monitoring-filter
+                    {% if format_filter == 'in_person' %}
+                        active
+                    {% endif %}
+                "
+                href="{% url 'core:monitoring' %}?format=in_person"
+            >
+                Очно
+            </a>
+
+
+            <a
+                class="
+                    monitoring-filter
+                    {% if format_filter == 'online' %}
+                        active
+                    {% endif %}
+                "
+                href="{% url 'core:monitoring' %}?format=online"
+            >
+                Онлайн
+            </a>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         ОБЩИЙ СВЕТОФОР
+         =================================================== -->
+
+    <section class="monitoring-panel">
+
+        <div class="monitoring-panel-header">
+
+            <h2>
+                Уровни эффективности
+            </h2>
+
+        </div>
+
+
+        <div class="traffic-summary">
+
+
+            <div class="traffic-bar">
+
+                <div
+                    class="
+                        traffic-segment
+                        traffic-high
+                    "
+                    style="width: {{ traffic.high.width }}%;"
+                ></div>
+
+                <div
+                    class="
+                        traffic-segment
+                        traffic-sufficient
+                    "
+                    style="width: {{ traffic.sufficient.width }}%;"
+                ></div>
+
+                <div
+                    class="
+                        traffic-segment
+                        traffic-satisfactory
+                    "
+                    style="width: {{ traffic.satisfactory.width }}%;"
+                ></div>
+
+                <div
+                    class="
+                        traffic-segment
+                        traffic-low
+                    "
+                    style="width: {{ traffic.low.width }}%;"
+                ></div>
+
+            </div>
+
+
+
+            <div class="traffic-legend">
+
+
+                <div class="traffic-legend-item">
+
+                    <span
+                        class="
+                            traffic-dot
+                            traffic-high
+                        "
+                    ></span>
+
+                    Высокая
+
+                    <strong>
+                        {{ traffic.high.count }}
+                    </strong>
+
+                    ·
+
+                    {{ traffic.high.percent }}%
+
+                </div>
+
+
+                <div class="traffic-legend-item">
+
+                    <span
+                        class="
+                            traffic-dot
+                            traffic-sufficient
+                        "
+                    ></span>
+
+                    Достаточная
+
+                    <strong>
+                        {{ traffic.sufficient.count }}
+                    </strong>
+
+                    ·
+
+                    {{ traffic.sufficient.percent }}%
+
+                </div>
+
+
+                <div class="traffic-legend-item">
+
+                    <span
+                        class="
+                            traffic-dot
+                            traffic-satisfactory
+                        "
+                    ></span>
+
+                    Удовлетворительная
+
+                    <strong>
+                        {{ traffic.satisfactory.count }}
+                    </strong>
+
+                    ·
+
+                    {{ traffic.satisfactory.percent }}%
+
+                </div>
+
+
+                <div class="traffic-legend-item">
+
+                    <span
+                        class="
+                            traffic-dot
+                            traffic-low
+                        "
+                    ></span>
+
+                    Низкая
+
+                    <strong>
+                        {{ traffic.low.count }}
+                    </strong>
+
+                    ·
+
+                    {{ traffic.low.percent }}%
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         ПРЕПОДАВАТЕЛИ
+         =================================================== -->
+
+    <section class="monitoring-panel">
+
+
+        <div class="monitoring-panel-header">
+
+            <h2>
+                Результаты по преподавателям
+            </h2>
+
+        </div>
+
+
+        {% if teacher_rows %}
+
+
+            <div class="teacher-monitor-head">
+
+                <div>
+                    Преподаватель
+                </div>
+
+                <div>
+                    Посещ.
+                </div>
+
+                <div>
+                    Среднее
+                </div>
+
+                <div>
+                    1-е → 3-е
+                </div>
+
+                <div>
+                    Уровни
+                </div>
+
+            </div>
+
+
+
+            {% for item in teacher_rows %}
+
+                <div
+                    class="
+                        teacher-monitor-row
+                        level-{{ item.latest_level_key }}
+                    "
+                >
+
+
+                    <div class="teacher-monitor-name">
+
+                        <a
+                            class="teacher-monitor-link"
+                            href="{% url 'core:teacher_monitoring' item.teacher.id %}"
+                        >
+                            {{ item.teacher.full_name }}
+                        </a>
+
+                    </div>
+
+
+                    <div class="teacher-monitor-count">
+
+                        {{ item.count }}
+
+                    </div>
+
+
+                    <div class="teacher-monitor-average">
+
+                        {{ item.average_percent }}%
+
+                    </div>
+
+
+                    <div>
+
+                        {% if item.dynamics != None %}
+
+                            {% if item.dynamics > 0 %}
+
+                                <span
+                                    class="
+                                        teacher-dynamics
+                                        positive
+                                    "
+                                >
+                                    +{{ item.dynamics }} п.п.
+                                </span>
+
+                            {% elif item.dynamics < 0 %}
+
+                                <span
+                                    class="
+                                        teacher-dynamics
+                                        negative
+                                    "
+                                >
+                                    {{ item.dynamics }} п.п.
+                                </span>
+
+                            {% else %}
+
+                                <span
+                                    class="
+                                        teacher-dynamics
+                                        neutral
+                                    "
+                                >
+                                    0 п.п.
+                                </span>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <span
+                                class="
+                                    teacher-dynamics
+                                    neutral
+                                "
+                            >
+                                —
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="teacher-traffic">
+
+
+                        <div class="teacher-traffic-bar">
+
+                            <div
+                                class="
+                                    traffic-segment
+                                    traffic-high
+                                "
+                                style="width: {{ item.high_width }}%;"
+                            ></div>
+
+                            <div
+                                class="
+                                    traffic-segment
+                                    traffic-sufficient
+                                "
+                                style="width: {{ item.sufficient_width }}%;"
+                            ></div>
+
+                            <div
+                                class="
+                                    traffic-segment
+                                    traffic-satisfactory
+                                "
+                                style="width: {{ item.satisfactory_width }}%;"
+                            ></div>
+
+                            <div
+                                class="
+                                    traffic-segment
+                                    traffic-low
+                                "
+                                style="width: {{ item.low_width }}%;"
+                            ></div>
+
+
+                            {% if item.unknown_width %}
+
+                                <div
+                                    class="
+                                        traffic-segment
+                                        traffic-unknown
+                                    "
+                                    style="width: {{ item.unknown_width }}%;"
+                                ></div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="teacher-traffic-values">
+
+                            {% if item.high_percent %}
+                                <span>
+                                    Выс. {{ item.high_percent }}%
+                                </span>
+                            {% endif %}
+
+                            {% if item.sufficient_percent %}
+                                <span>
+                                    Дост. {{ item.sufficient_percent }}%
+                                </span>
+                            {% endif %}
+
+                            {% if item.satisfactory_percent %}
+                                <span>
+                                    Удовл. {{ item.satisfactory_percent }}%
+                                </span>
+                            {% endif %}
+
+                            {% if item.low_percent %}
+                                <span>
+                                    Низк. {{ item.low_percent }}%
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="monitoring-empty">
+
+                В выбранной категории
+                завершённых оцениваний пока нет.
+
+            </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+
+    <!-- ===================================================
+         ПОСЛЕДНИЕ РЕЗУЛЬТАТЫ
+         =================================================== -->
+
+    <section class="monitoring-panel">
+
+
+        <div class="monitoring-panel-header">
+
+            <h2>
+                Последние результаты
+            </h2>
+
+        </div>
+
+
+        {% if recent_results %}
+
+
+            <div class="monitoring-result-head">
+
+                <div>
+                    Дата
+                </div>
+
+                <div>
+                    Преподаватель
+                </div>
+
+                <div style="text-align:right;">
+                    Результат
+                </div>
+
+                <div style="text-align:right;">
+                    Уровень
+                </div>
+
+            </div>
+
+
+            {% for item in recent_results %}
+
+                <a
+                    class="
+                    monitoring-result-row
+                    level-{{ item.level_key }}
+                "
+                    href="{% url 'checklists:result' item.assessment.visit.id %}"
+                >
+
+
+                    <div class="monitoring-result-date">
+
+                        {{ item.assessment.visit.date|date:"d.m.Y" }}
+
+                        {% if item.assessment.visit.lesson_number %}
+
+                            <br>
+
+                            {{ item.assessment.visit.lesson_label }}
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="monitoring-result-name">
+
+                            {{ item.assessment.visit.teacher.full_name }}
+
+                        </div>
+
+                        <div class="monitoring-result-meta">
+
+                            {{ item.assessment.visit.subject }}
+
+                            {% if item.assessment.visit.group %}
+
+                                ·
+                                {{ item.assessment.visit.group }}
+
+                            {% endif %}
+
+                            ·
+                            {{ item.assessment.visit.get_format_display }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="monitoring-result-score">
+
+                        {{ item.percent }}%
+
+                    </div>
+
+
+                    <div class="monitoring-result-level">
+
+                        <span
+                            class="
+                                level-badge
+                                {{ item.level_key }}
+                            "
+                        >
+
+                            {{ item.level_name }}
+
+                        </span>
+
+                    </div>
+
+
+                </a>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="monitoring-empty">
+                Здесь появятся завершённые результаты.
+            </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+</main>
+
+{% endblock %}

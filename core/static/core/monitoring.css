@@ -1,0 +1,1227 @@
+﻿/* ==========================================================
+   MONITORING
+   ========================================================== */
+
+
+/* ==========================================================
+   KPI
+   ========================================================== */
+
+.monitoring-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.monitoring-stat {
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 130px;
+
+    padding: 20px;
+
+    background:
+        rgba(251,252,251,.93);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow: var(--shadow);
+}
+
+
+.monitoring-stat::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+}
+
+
+.monitoring-stat:nth-child(1)::before {
+    background:
+        var(--kbt-green);
+}
+
+
+.monitoring-stat:nth-child(2)::before {
+    background:
+        var(--kbt-turquoise);
+}
+
+
+.monitoring-stat:nth-child(3)::before {
+    background:
+        var(--kbt-blue);
+}
+
+
+.monitoring-stat-label {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+.monitoring-stat-value {
+    margin-top: 12px;
+
+    color: var(--text);
+
+    font-size: 34px;
+
+    line-height: 1;
+
+    font-weight: 850;
+
+    letter-spacing: -.04em;
+}
+
+
+.monitoring-stat-note {
+    margin-top: 8px;
+
+    color: var(--light);
+
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   FILTERS
+   ========================================================== */
+
+.monitoring-toolbar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap: 16px;
+
+    margin:
+        6px 0
+        18px;
+}
+
+
+.monitoring-filters {
+    display: flex;
+
+    gap: 7px;
+
+    flex-wrap: wrap;
+}
+
+
+.monitoring-filter {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 36px;
+
+    padding:
+        7px
+        13px;
+
+    color: var(--muted);
+
+    background:
+        rgba(251,252,251,.80);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 9px;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.monitoring-filter:hover {
+    border-color:
+        var(--kbt-turquoise);
+}
+
+
+.monitoring-filter.active {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kbt-turquoise),
+            var(--kbt-blue)
+        );
+
+    border-color:
+        transparent;
+}
+
+
+/* ==========================================================
+   PANEL
+   ========================================================== */
+
+.monitoring-panel {
+    overflow: hidden;
+
+    margin-bottom: 18px;
+
+    background:
+        rgba(251,252,251,.93);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 17px;
+
+    box-shadow: var(--shadow);
+}
+
+
+.monitoring-panel-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap: 15px;
+
+    padding:
+        17px
+        20px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(105,168,79,.035),
+            rgba(56,170,161,.035),
+            rgba(75,145,191,.03)
+        );
+}
+
+
+.monitoring-panel-header h2 {
+    margin: 0;
+
+    font-size: 17px;
+}
+
+
+/* ==========================================================
+   ОБЩИЙ СВЕТОФОР
+   ========================================================== */
+
+.traffic-summary {
+    padding:
+        20px;
+}
+
+
+.traffic-bar {
+    display: flex;
+
+    width: 100%;
+    height: 14px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #e5ebe8;
+}
+
+
+.traffic-segment {
+    height: 100%;
+}
+
+
+.traffic-high {
+    background: #4f9a58;
+}
+
+
+.traffic-sufficient {
+    background: #9abb65;
+}
+
+
+.traffic-satisfactory {
+    background: #e1bd55;
+}
+
+
+.traffic-low {
+    background: #d96b64;
+}
+
+
+.traffic-legend {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap:
+        12px
+        20px;
+
+    margin-top: 15px;
+}
+
+
+.traffic-legend-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.traffic-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+}
+
+
+.traffic-legend-item strong {
+    color: var(--text);
+}
+
+
+/* ==========================================================
+   TEACHERS TABLE
+   ========================================================== */
+
+.teacher-monitor-head,
+.teacher-monitor-row {
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 1.35fr)
+        80px
+        115px
+        110px
+        minmax(220px, 1fr);
+
+    gap: 14px;
+
+    align-items: center;
+}
+
+
+.teacher-monitor-head {
+    padding:
+        11px
+        20px;
+
+    color: var(--muted);
+
+    background:
+        rgba(56,170,161,.025);
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+.teacher-monitor-row {
+    padding:
+        16px
+        20px;
+
+    border-bottom:
+        1px solid #e7eeeb;
+}
+
+
+.teacher-monitor-row:last-child {
+    border-bottom: 0;
+}
+
+
+.teacher-monitor-name {
+    color: var(--text);
+
+    font-size: 13px;
+
+    font-weight: 750;
+}
+
+
+.teacher-monitor-count {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+
+.teacher-monitor-average {
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 14px;
+
+    font-weight: 850;
+}
+
+
+.teacher-dynamics {
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+
+.teacher-dynamics.positive {
+    color: #478250;
+}
+
+
+.teacher-dynamics.negative {
+    color: #b7524c;
+}
+
+
+.teacher-dynamics.neutral {
+    color: var(--muted);
+}
+
+
+/* ==========================================================
+   MINI TRAFFIC
+   ========================================================== */
+
+.teacher-traffic {
+    min-width: 0;
+}
+
+
+.teacher-traffic-bar {
+    display: flex;
+
+    width: 100%;
+
+    height: 9px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #e5ebe8;
+}
+
+
+.teacher-traffic-values {
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 6px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+
+.teacher-traffic-values span {
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   RESULT STATUS
+   ========================================================== */
+
+.level-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.level-badge::before {
+    content: "";
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+}
+
+
+.level-badge.high {
+    color: #3e7947;
+}
+
+
+.level-badge.high::before {
+    background: #4f9a58;
+}
+
+
+.level-badge.sufficient {
+    color: #718c43;
+}
+
+
+.level-badge.sufficient::before {
+    background: #9abb65;
+}
+
+
+.level-badge.satisfactory {
+    color: #997920;
+}
+
+
+.level-badge.satisfactory::before {
+    background: #e1bd55;
+}
+
+
+.level-badge.low {
+    color: #a94d47;
+}
+
+
+.level-badge.low::before {
+    background: #d96b64;
+}
+
+
+.level-badge.unknown {
+    color: var(--muted);
+}
+
+
+.level-badge.unknown::before {
+    background: #aab5b1;
+}
+
+
+/* ==========================================================
+   RECENT RESULTS
+   ========================================================== */
+
+.monitoring-result-head,
+.monitoring-result-row {
+    display: grid;
+
+    grid-template-columns:
+        95px
+        minmax(0, 1fr)
+        90px
+        210px;
+
+    gap: 14px;
+
+    align-items: center;
+}
+
+
+.monitoring-result-head {
+    padding:
+        10px
+        20px;
+
+    color: var(--muted);
+
+    background:
+        rgba(56,170,161,.025);
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+.monitoring-result-row {
+    padding:
+        14px
+        20px;
+
+    border-bottom:
+        1px solid #e7eeeb;
+
+    text-decoration: none;
+}
+
+
+.monitoring-result-row:last-child {
+    border-bottom: 0;
+}
+
+
+.monitoring-result-row:hover {
+    background:
+        rgba(56,170,161,.045);
+}
+
+
+.monitoring-result-date {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    line-height: 1.45;
+}
+
+
+.monitoring-result-name {
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.monitoring-result-meta {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.monitoring-result-score {
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 14px;
+
+    font-weight: 850;
+
+    text-align: right;
+}
+
+
+.monitoring-result-level {
+    text-align: right;
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.monitoring-empty {
+    padding: 40px;
+
+    color: var(--muted);
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 1000px) {
+
+    .teacher-monitor-head {
+        display: none;
+    }
+
+
+    .teacher-monitor-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto
+            auto;
+
+        gap:
+            8px
+            14px;
+    }
+
+
+    .teacher-traffic {
+        grid-column:
+            1 / -1;
+    }
+
+
+    .teacher-monitor-count {
+        grid-column: 1;
+    }
+
+}
+
+
+@media (max-width: 750px) {
+
+    .monitoring-stats {
+        grid-template-columns: 1fr;
+    }
+
+
+    .monitoring-toolbar {
+        display: block;
+    }
+
+
+    .monitoring-result-head {
+        display: none;
+    }
+
+
+    .monitoring-result-row {
+        grid-template-columns:
+            75px
+            minmax(0, 1fr)
+            auto;
+    }
+
+
+    .monitoring-result-level {
+        grid-column: 2 / -1;
+
+        text-align: left;
+    }
+
+}
+
+/* ==========================================================
+   СВЕТОФОР — ПОЛНОЦЕННОЕ ВЫДЕЛЕНИЕ СТРОК
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   Цвета сегментов
+   ---------------------------------------------------------- */
+
+.traffic-high {
+    background: #4f9a58;
+}
+
+.traffic-sufficient {
+    background: #9fbd68;
+}
+
+.traffic-satisfactory {
+    background: #e1bd55;
+}
+
+.traffic-low {
+    background: #d96b64;
+}
+
+.traffic-unknown {
+    background: #aebbb6;
+}
+
+
+/* ----------------------------------------------------------
+   Полосы теперь должны выглядеть как данные,
+   а не как пустые input-range
+   ---------------------------------------------------------- */
+
+.traffic-bar,
+.teacher-traffic-bar {
+    background: #dfe7e4;
+
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(35,51,49,.03);
+}
+
+
+.teacher-traffic-bar {
+    height: 11px;
+}
+
+
+/* ==========================================================
+   РЯДЫ ПРЕПОДАВАТЕЛЕЙ
+   ========================================================== */
+
+.teacher-monitor-row {
+    position: relative;
+
+    border-left:
+        4px solid transparent;
+
+    transition:
+        background .12s;
+}
+
+
+/* Высокая */
+
+.teacher-monitor-row.level-high {
+    background:
+        rgba(79,154,88,.075);
+
+    border-left-color:
+        #4f9a58;
+}
+
+
+/* Достаточная */
+
+.teacher-monitor-row.level-sufficient {
+    background:
+        rgba(159,189,104,.10);
+
+    border-left-color:
+        #9fbd68;
+}
+
+
+/* Удовлетворительная */
+
+.teacher-monitor-row.level-satisfactory {
+    background:
+        rgba(225,189,85,.11);
+
+    border-left-color:
+        #e1bd55;
+}
+
+
+/* Низкая */
+
+.teacher-monitor-row.level-low {
+    background:
+        rgba(217,107,100,.095);
+
+    border-left-color:
+        #d96b64;
+}
+
+
+/* Без уровня */
+
+.teacher-monitor-row.level-unknown {
+    background:
+        rgba(174,187,182,.08);
+
+    border-left-color:
+        #aebbb6;
+}
+
+
+.teacher-monitor-row.level-high:hover {
+    background:
+        rgba(79,154,88,.12);
+}
+
+
+.teacher-monitor-row.level-sufficient:hover {
+    background:
+        rgba(159,189,104,.15);
+}
+
+
+.teacher-monitor-row.level-satisfactory:hover {
+    background:
+        rgba(225,189,85,.16);
+}
+
+
+.teacher-monitor-row.level-low:hover {
+    background:
+        rgba(217,107,100,.14);
+}
+
+
+/* ==========================================================
+   ПОСЛЕДНИЕ РЕЗУЛЬТАТЫ
+   ========================================================== */
+
+.monitoring-result-row {
+    position: relative;
+
+    border-left:
+        4px solid transparent;
+}
+
+
+/* Высокая */
+
+.monitoring-result-row.level-high {
+    background:
+        rgba(79,154,88,.07);
+
+    border-left-color:
+        #4f9a58;
+}
+
+
+/* Достаточная */
+
+.monitoring-result-row.level-sufficient {
+    background:
+        rgba(159,189,104,.10);
+
+    border-left-color:
+        #9fbd68;
+}
+
+
+/* Удовлетворительная */
+
+.monitoring-result-row.level-satisfactory {
+    background:
+        rgba(225,189,85,.11);
+
+    border-left-color:
+        #e1bd55;
+}
+
+
+/* Низкая */
+
+.monitoring-result-row.level-low {
+    background:
+        rgba(217,107,100,.095);
+
+    border-left-color:
+        #d96b64;
+}
+
+
+/* Без уровня */
+
+.monitoring-result-row.level-unknown {
+    background:
+        rgba(174,187,182,.08);
+
+    border-left-color:
+        #aebbb6;
+}
+
+
+/* hover сохраняет смысл цвета */
+
+.monitoring-result-row.level-high:hover {
+    background:
+        rgba(79,154,88,.12);
+}
+
+.monitoring-result-row.level-sufficient:hover {
+    background:
+        rgba(159,189,104,.15);
+}
+
+.monitoring-result-row.level-satisfactory:hover {
+    background:
+        rgba(225,189,85,.16);
+}
+
+.monitoring-result-row.level-low:hover {
+    background:
+        rgba(217,107,100,.14);
+}
+
+
+/* ==========================================================
+   САМИ ПОДПИСИ БОЛЬШЕ НЕ ДОЛЖНЫ БЫТЬ
+   ЕДИНСТВЕННЫМ ЦВЕТНЫМ ЭЛЕМЕНТОМ
+   ========================================================== */
+
+.level-badge {
+    color: var(--text) !important;
+
+    font-weight: 700;
+}
+
+
+/* точка сохраняет цвет уровня */
+
+.level-badge.high::before {
+    background: #4f9a58;
+}
+
+.level-badge.sufficient::before {
+    background: #9fbd68;
+}
+
+.level-badge.satisfactory::before {
+    background: #e1bd55;
+}
+
+.level-badge.low::before {
+    background: #d96b64;
+}
+
+
+/* ==========================================================
+   TEACHER MONITORING
+   ========================================================== */
+
+.teacher-monitor-link {
+    color: inherit;
+
+    text-decoration: none;
+}
+
+
+.teacher-monitor-link:hover {
+    color: var(--kbt-turquoise-dark);
+
+    text-decoration: underline;
+}
+
+
+.teacher-history-head,
+.teacher-history-row {
+    display: grid;
+
+    grid-template-columns:
+        95px
+        115px
+        minmax(220px, 1fr)
+        115px
+        220px;
+
+    gap: 15px;
+
+    align-items: center;
+}
+
+
+.teacher-history-head {
+    padding:
+        11px
+        20px;
+
+    color: var(--muted);
+
+    background:
+        rgba(56,170,161,.025);
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+.teacher-history-row {
+    position: relative;
+
+    padding:
+        17px
+        20px;
+
+    border-left:
+        4px solid transparent;
+
+    border-bottom:
+        1px solid #e7eeeb;
+
+    text-decoration: none;
+
+    transition:
+        filter .12s;
+}
+
+
+.teacher-history-row:last-child {
+    border-bottom: 0;
+}
+
+
+.teacher-history-row:hover {
+    filter: brightness(.975);
+}
+
+
+.teacher-history-row.level-high {
+    background:
+        rgba(79,154,88,.075);
+
+    border-left-color:
+        #4f9a58;
+}
+
+
+.teacher-history-row.level-sufficient {
+    background:
+        rgba(159,189,104,.10);
+
+    border-left-color:
+        #9fbd68;
+}
+
+
+.teacher-history-row.level-satisfactory {
+    background:
+        rgba(225,189,85,.11);
+
+    border-left-color:
+        #e1bd55;
+}
+
+
+.teacher-history-row.level-low {
+    background:
+        rgba(217,107,100,.095);
+
+    border-left-color:
+        #d96b64;
+}
+
+
+.teacher-history-row.level-unknown {
+    background:
+        rgba(174,187,182,.08);
+
+    border-left-color:
+        #aebbb6;
+}
+
+
+.teacher-history-number {
+    color: var(--text);
+
+    font-size: 17px;
+
+    font-weight: 850;
+}
+
+
+.teacher-history-date {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+.teacher-history-subject {
+    color: var(--text);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.teacher-history-meta {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.teacher-history-score {
+    color: var(--kbt-turquoise-dark);
+
+    font-size: 16px;
+
+    font-weight: 850;
+}
+
+
+.teacher-history-score span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+@media (max-width: 850px) {
+
+    .teacher-history-head {
+        display: none;
+    }
+
+
+    .teacher-history-row {
+        grid-template-columns:
+            55px
+            90px
+            minmax(0, 1fr)
+            auto;
+    }
+
+
+    .teacher-history-row > div:last-child {
+        grid-column:
+            3 / -1;
+    }
+
+}
+

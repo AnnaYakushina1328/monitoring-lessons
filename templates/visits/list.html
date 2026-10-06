@@ -2,7 +2,7 @@
 
 
 {% block title %}
-    Посещения · Мониторинг занятий
+    Посещения · Мониторинг качества занятий
 {% endblock %}
 
 
@@ -67,7 +67,7 @@
 
                         <tr>
                             <th>Дата</th>
-                            <th>Занятие</th>
+                            <th>Пара</th>
                             <th>Преподаватель</th>
                             <th>Дисциплина</th>
                             <th>Группа</th>
@@ -94,7 +94,7 @@
                                 </td>
 
                                 <td class="table-muted">
-                                    {{ visit.lesson_number|default:"—" }}
+                                    {{ visit.lesson_label }}
                                 </td>
 
                                 <td class="table-main">

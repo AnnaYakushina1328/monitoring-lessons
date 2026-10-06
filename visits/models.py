@@ -9,6 +9,38 @@ class Visit(models.Model):
         IN_PERSON = "in_person", "Очно"
         ONLINE = "online", "Онлайн"
 
+    class ChecklistType(models.TextChoices):
+        PD = (
+            "pd",
+            "Теоретическое занятие (ПД)",
+        )
+
+        LPZ = (
+            "lpz",
+            "Лабораторно-практическое занятие (ЛПЗ)",
+        )
+
+        OUP = (
+            "oup",
+            "Общеобразовательное занятие (ОУП)",
+        )
+
+        UPPP = (
+            "uppp",
+            "Учебная / производственная практика",
+        )
+
+        ATTESTATION = (
+            "attestation",
+            "Аттестация студентов",
+        )
+
+        ONLINE = (
+            "online",
+            "Онлайн-занятие",
+        )
+
+
     class Status(models.TextChoices):
         PLANNED = "planned", "Запланировано"
         IN_PROGRESS = "in_progress", "Проводится"
@@ -69,12 +101,29 @@ class Visit(models.Model):
         default=Format.IN_PERSON,
     )
 
+    checklist_code = models.CharField(
+        "Тип чек-листа",
+        max_length=30,
+        choices=ChecklistType.choices,
+        default=ChecklistType.OUP,
+        db_index=True,
+    )
+
+
     auditors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="assigned_visits",
         verbose_name="Эксперты",
         blank=True,
     )
+
+    methodists = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        verbose_name="Методисты",
+        related_name="methodist_visits",
+        blank=True,
+    )
+
 
     is_open_lesson = models.BooleanField(
         "Открытое занятие",
@@ -117,6 +166,15 @@ class Visit(models.Model):
         ordering = ["date", "lesson_number", "teacher__full_name"]
         verbose_name = "посещение"
         verbose_name_plural = "посещения"
+
+    @property
+    def lesson_label(self):
+        if not self.lesson_number:
+            return "—"
+
+        return f"{self.lesson_number}-я пара"
+
+
 
     def __str__(self):
         return f"{self.teacher} — {self.date}"

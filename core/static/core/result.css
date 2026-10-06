@@ -839,3 +839,476 @@
 
 }
 
+
+
+/* RESULT THRESHOLDS AND CRITERION TRAFFIC */
+
+
+/* ==========================================================
+   ШКАЛА ИТОГОВОГО РЕЗУЛЬТАТА
+   ========================================================== */
+
+.result-threshold-card {
+    margin-bottom: 26px;
+
+    padding:
+        19px
+        21px
+        21px;
+
+    background:
+        rgba(251,252,251,.93);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(38,74,68,.035);
+}
+
+
+.result-threshold-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content:
+        space-between;
+
+    gap: 20px;
+}
+
+
+.result-threshold-title {
+    color: var(--text);
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+
+.result-threshold-caption {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.result-threshold-header > strong {
+    color:
+        var(--kbt-turquoise-dark);
+
+    font-size: 16px;
+}
+
+
+.result-threshold-wrap {
+    position: relative;
+
+    margin-top: 31px;
+
+    padding-bottom: 29px;
+}
+
+
+.result-threshold-scale {
+    position: relative;
+}
+
+
+.result-threshold-segments {
+    display: flex;
+
+    width: 100%;
+    height: 14px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #e2e9e6;
+}
+
+
+.result-threshold-segment {
+    min-width: 1px;
+}
+
+
+.scale-high {
+    background: #4f9a58;
+}
+
+
+.scale-sufficient {
+    background: #9fbd68;
+}
+
+
+.scale-satisfactory {
+    background: #e1bd55;
+}
+
+
+.scale-low {
+    background: #d96b64;
+}
+
+
+.scale-unknown {
+    background: #aebbb6;
+}
+
+
+/* Текущий результат */
+
+.result-threshold-pointer {
+    position: absolute;
+
+    top: -12px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 3;
+}
+
+
+.result-threshold-pointer::before {
+    content: "";
+
+    display: block;
+
+    width: 2px;
+    height: 38px;
+
+    margin: 0 auto;
+
+    background: var(--text);
+
+    border-radius: 999px;
+}
+
+
+.result-threshold-pointer span {
+    position: absolute;
+
+    top: -1px;
+    left: 50%;
+
+    width: 10px;
+    height: 10px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background: var(--text);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(255,255,255,.85);
+}
+
+
+/* Пороговые числа */
+
+.result-threshold-markers {
+    position: relative;
+
+    height: 25px;
+}
+
+
+.result-threshold-marker {
+    position: absolute;
+
+    top: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    transform:
+        translateX(-50%);
+}
+
+
+.result-threshold-marker.first {
+    transform: none;
+
+    align-items: flex-start;
+}
+
+
+.result-threshold-marker.last {
+    transform:
+        translateX(-100%);
+
+    align-items: flex-end;
+}
+
+
+.result-threshold-marker i {
+    display: block;
+
+    width: 1px;
+    height: 7px;
+
+    background: #8e9c98;
+}
+
+
+.result-threshold-marker b {
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    font-weight: 750;
+}
+
+
+/* Легенда уровней */
+
+.result-threshold-legend {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap:
+        9px
+        19px;
+
+    margin-top: 8px;
+}
+
+
+.result-threshold-legend-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+.result-threshold-legend-item strong {
+    color: var(--text);
+
+    font-weight: 700;
+}
+
+
+.result-threshold-dot {
+    width: 8px;
+    height: 8px;
+
+    flex: 0 0 auto;
+
+    border-radius: 50%;
+}
+
+
+/* ==========================================================
+   ЛЕГЕНДА СВЕТОФОРА КРИТЕРИЕВ
+   ========================================================== */
+
+.criterion-traffic-legend {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px 18px;
+
+    margin:
+        -2px 0
+        13px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+.criterion-traffic-item {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.criterion-traffic-item i {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+}
+
+
+.criterion-traffic-item.green i {
+    background: #4f9a58;
+}
+
+
+.criterion-traffic-item.yellow i {
+    background: #e1bd55;
+}
+
+
+.criterion-traffic-item.red i {
+    background: #d96b64;
+}
+
+
+/* ==========================================================
+   СВЕТОФОР КАЖДОГО КРИТЕРИЯ
+   ========================================================== */
+
+.result-criterion {
+    position: relative;
+
+    padding-left: 15px;
+
+    border-left:
+        4px solid transparent;
+
+    transition:
+        background .12s;
+}
+
+
+/* Максимум */
+
+.result-criterion-green {
+    background:
+        rgba(79,154,88,.07);
+
+    border-left-color:
+        #4f9a58;
+}
+
+
+/* Частично */
+
+.result-criterion-yellow {
+    background:
+        rgba(225,189,85,.105);
+
+    border-left-color:
+        #e1bd55;
+}
+
+
+/* Ноль */
+
+.result-criterion-red {
+    background:
+        rgba(217,107,100,.10);
+
+    border-left-color:
+        #d96b64;
+}
+
+
+/* Черновик / ещё не заполнено */
+
+.result-criterion-neutral {
+    border-left-color:
+        transparent;
+}
+
+
+/* Балл справа тоже становится заметным */
+
+.result-criterion-green
+.result-criterion-score {
+    color: #43804b;
+}
+
+
+.result-criterion-yellow
+.result-criterion-score {
+    color: #97771e;
+}
+
+
+.result-criterion-red
+.result-criterion-score {
+    color: #ac4e48;
+}
+
+
+/* Выбранные ответы внутри красного критерия */
+
+.result-criterion-red
+.result-answer {
+    border-left-color:
+        rgba(217,107,100,.48);
+}
+
+
+/* Выбранные ответы внутри жёлтого критерия */
+
+.result-criterion-yellow
+.result-answer {
+    border-left-color:
+        rgba(225,189,85,.60);
+}
+
+
+/* Выбранные ответы внутри зелёного критерия */
+
+.result-criterion-green
+.result-answer {
+    border-left-color:
+        rgba(79,154,88,.45);
+}
+
+
+@media (max-width: 650px) {
+
+    .result-threshold-card {
+        padding:
+            17px
+            16px;
+    }
+
+
+    .result-threshold-header {
+        display: block;
+    }
+
+
+    .result-threshold-header > strong {
+        display: block;
+
+        margin-top: 8px;
+    }
+
+
+    .result-threshold-legend {
+        display: grid;
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+

@@ -18,6 +18,135 @@ from .forms import VisitForm
 from .models import Visit
 
 
+def get_schedule_warnings(visit):
+    """
+    Информационные предупреждения о других посещениях
+    в тот же день.
+
+    Ничего не блокирует.
+    """
+
+    other_visits = (
+        Visit.objects
+        .filter(
+            date=visit.date,
+        )
+        .exclude(
+            pk=visit.pk,
+        )
+        .exclude(
+            status=Visit.Status.CANCELLED,
+        )
+        .select_related(
+            "teacher",
+        )
+        .prefetch_related(
+            "auditors",
+            "methodists",
+        )
+    )
+
+    warnings = []
+
+
+    # --------------------------------------------------------
+    # Преподаватель
+    # --------------------------------------------------------
+
+    teacher_visits = [
+        item
+        for item in other_visits
+        if item.teacher_id == visit.teacher_id
+    ]
+
+    if teacher_visits:
+
+        lessons = []
+
+        for item in teacher_visits:
+
+            if item.lesson_number:
+                lessons.append(
+                    f"{item.lesson_number} занятие"
+                )
+            else:
+                lessons.append(
+                    "занятие без номера"
+                )
+
+        warnings.append(
+            (
+                f"На {visit.date.strftime('%d.%m.%Y')} "
+                f"у преподавателя "
+                f"{visit.teacher.full_name} "
+                f"уже есть другое посещение: "
+                + ", ".join(lessons)
+                + "."
+            )
+        )
+
+
+    # --------------------------------------------------------
+    # Эксперты
+    # --------------------------------------------------------
+
+    selected_auditors = list(
+        visit.auditors.all()
+    )
+
+    for auditor in selected_auditors:
+
+        matches = [
+            item
+            for item in other_visits
+            if item.auditors.filter(
+                pk=auditor.pk
+            ).exists()
+        ]
+
+        if matches:
+
+            warnings.append(
+                (
+                    f"Эксперт {auditor} "
+                    f"уже назначен на другое посещение "
+                    f"{visit.date.strftime('%d.%m.%Y')}."
+                )
+            )
+
+
+    # --------------------------------------------------------
+    # Методисты
+    # --------------------------------------------------------
+
+    selected_methodists = list(
+        visit.methodists.all()
+    )
+
+    for methodist in selected_methodists:
+
+        matches = [
+            item
+            for item in other_visits
+            if item.methodists.filter(
+                pk=methodist.pk
+            ).exists()
+        ]
+
+        if matches:
+
+            warnings.append(
+                (
+                    f"Методист {methodist} "
+                    f"уже назначен на другое посещение "
+                    f"{visit.date.strftime('%d.%m.%Y')}."
+                )
+            )
+
+
+    return warnings
+
+
 @login_required
 def visit_list(request):
 
@@ -29,7 +158,8 @@ def visit_list(request):
             "teacher"
         )
         .prefetch_related(
-            "auditors"
+            "auditors",
+            "methodists",
         )
         .order_by(
             "-date",
@@ -43,6 +173,7 @@ def visit_list(request):
         "visits/list.html",
         {
             "visits": visits,
+
             "can_create_visits": (
                 can_create_visit(
                     request.user
@@ -57,6 +188,7 @@ def visit_detail(
     request,
     pk,
 ):
+
     visit = get_object_or_404(
         Visit.objects
         .select_related(
@@ -64,18 +196,22 @@ def visit_detail(
             "assessment__template",
         )
         .prefetch_related(
-            "auditors"
+            "auditors",
+            "methodists",
         ),
         pk=pk,
     )
+
 
     if not can_view_visit(
         request.user,
         visit,
     ):
+
         raise PermissionDenied(
             "У вас нет доступа к этому посещению."
         )
+
 
     assessment = getattr(
         visit,
@@ -83,12 +219,11 @@ def visit_detail(
         None,
     )
 
+
     expected_template_code = (
-        "online"
-        if visit.format
-        == Visit.Format.ONLINE
-        else "oup"
+        visit.checklist_code
     )
+
 
     assessment_mismatch = (
         assessment is not None
@@ -96,18 +231,18 @@ def visit_detail(
         != expected_template_code
     )
 
+
     checklist_label = (
-        "Онлайн-чек-лист"
-        if visit.format
-        == Visit.Format.ONLINE
-        else "Чек-лист ОУП"
+        visit.get_checklist_code_display()
     )
+
 
     can_manage_visit = (
         can_create_visit(
             request.user
         )
     )
+
 
     can_cancel_visit = (
         can_manage_visit
@@ -118,11 +253,13 @@ def visit_detail(
         )
     )
 
+
     return render(
         request,
         "visits/detail.html",
         {
             "visit": visit,
+
             "assessment": assessment,
 
             "assessment_mismatch": (
@@ -157,10 +294,11 @@ def visit_create(request):
     if not can_create_visit(
         request.user
     ):
+
         raise PermissionDenied(
-            "Планировать посещения может "
-            "только администратор."
+            "У вас нет прав на планирование посещений."
         )
+
 
     if request.method == "POST":
 
@@ -182,10 +320,21 @@ def visit_create(request):
 
             form.save_m2m()
 
+
+            for warning in get_schedule_warnings(
+                visit
+            ):
+                messages.warning(
+                    request,
+                    warning,
+                )
+
+
             messages.success(
                 request,
                 "Посещение успешно создано.",
             )
+
 
             return redirect(
                 "visits:detail",
@@ -193,7 +342,9 @@ def visit_create(request):
             )
 
     else:
+
         form = VisitForm()
+
 
     return render(
         request,
@@ -209,18 +360,22 @@ def visit_edit(
     request,
     pk,
 ):
+
     if not can_create_visit(
         request.user
     ):
+
         raise PermissionDenied(
-            "Редактировать посещения может "
-            "только администратор."
+            "У вас нет прав на "
+            "редактирование посещений."
         )
+
 
     visit = get_object_or_404(
         Visit,
         pk=pk,
     )
+
 
     if request.method == "POST":
 
@@ -233,10 +388,21 @@ def visit_edit(
 
             visit = form.save()
 
+
+            for warning in get_schedule_warnings(
+                visit
+            ):
+                messages.warning(
+                    request,
+                    warning,
+                )
+
+
             messages.success(
                 request,
                 "Изменения сохранены.",
             )
+
 
             return redirect(
                 "visits:detail",
@@ -248,6 +414,7 @@ def visit_edit(
         form = VisitForm(
             instance=visit,
         )
+
 
     return render(
         request,
@@ -264,13 +431,15 @@ def visit_cancel(
     request,
     pk,
 ):
+
     if not can_create_visit(
         request.user
     ):
+
         raise PermissionDenied(
-            "Отменять посещения может "
-            "только администратор."
+            "У вас нет прав на отмену посещений."
         )
+
 
     visit = get_object_or_404(
         Visit.objects.select_related(
@@ -278,6 +447,7 @@ def visit_cancel(
         ),
         pk=pk,
     )
+
 
     if visit.status == Visit.Status.COMPLETED:
 
@@ -294,6 +464,7 @@ def visit_cancel(
             pk=visit.pk,
         )
 
+
     if visit.status == Visit.Status.CANCELLED:
 
         messages.info(
@@ -305,6 +476,7 @@ def visit_cancel(
             "visits:detail",
             pk=visit.pk,
         )
+
 
     if request.method == "POST":
 
@@ -319,15 +491,18 @@ def visit_cancel(
             ]
         )
 
+
         messages.success(
             request,
             "Посещение отменено.",
         )
 
+
         return redirect(
             "visits:detail",
             pk=visit.pk,
         )
+
 
     return render(
         request,

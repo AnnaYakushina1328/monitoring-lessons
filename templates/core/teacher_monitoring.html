@@ -1,0 +1,301 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+    {{ teacher.full_name }} · Мониторинг
+{% endblock %}
+
+
+{% block extra_head %}
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/monitoring.css' %}"
+    >
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<main class="page">
+
+
+    <div class="page-toolbar">
+
+        <a
+            class="page-back"
+            href="{% url 'core:monitoring' %}"
+        >
+            ← Мониторинг
+        </a>
+
+    </div>
+
+
+
+    <div class="page-title-row">
+
+        <div class="page-title">
+
+            <h1>
+                {{ teacher.full_name }}
+            </h1>
+
+            <p>
+
+                {% if teacher.position %}
+                    {{ teacher.position }}
+                {% else %}
+                    Результаты мониторинга преподавателя
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <section class="monitoring-stats">
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Завершено посещений
+            </div>
+
+            <div class="monitoring-stat-value">
+                {{ visit_count }}
+            </div>
+
+            <div class="monitoring-stat-note">
+                с итоговым оцениванием
+            </div>
+
+        </article>
+
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Средний результат
+            </div>
+
+            <div class="monitoring-stat-value">
+                {{ average_percent }}%
+            </div>
+
+            <div class="monitoring-stat-note">
+                от максимума формы
+            </div>
+
+        </article>
+
+
+
+        <article class="monitoring-stat">
+
+            <div class="monitoring-stat-label">
+                Динамика 1-е → 3-е
+            </div>
+
+            <div class="monitoring-stat-value">
+
+                {% if dynamics != None %}
+
+                    {% if dynamics > 0 %}
+                        +{{ dynamics }}
+                    {% else %}
+                        {{ dynamics }}
+                    {% endif %}
+
+                    <span
+                        style="
+                            font-size:15px;
+                            font-weight:700;
+                        "
+                    >
+                        п.п.
+                    </span>
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </div>
+
+            <div class="monitoring-stat-note">
+
+                {% if dynamics == None %}
+                    появится после третьего посещения
+                {% else %}
+                    изменение результата
+                {% endif %}
+
+            </div>
+
+        </article>
+
+
+    </section>
+
+
+
+    <section class="monitoring-panel">
+
+
+        <div class="monitoring-panel-header">
+
+            <h2>
+                История посещений
+            </h2>
+
+        </div>
+
+
+        {% if rows %}
+
+
+            <div class="teacher-history-head">
+
+                <div>
+                    Посещение
+                </div>
+
+                <div>
+                    Дата
+                </div>
+
+                <div>
+                    Занятие
+                </div>
+
+                <div>
+                    Результат
+                </div>
+
+                <div>
+                    Уровень
+                </div>
+
+            </div>
+
+
+
+            {% for item in rows %}
+
+                <a
+                    class="
+                        teacher-history-row
+                        level-{{ item.level_key }}
+                    "
+                    href="{% url 'checklists:result' item.assessment.visit.id %}"
+                >
+
+
+                    <div class="teacher-history-number">
+
+                        {{ item.number }}-е
+
+                    </div>
+
+
+                    <div class="teacher-history-date">
+
+                        {{ item.assessment.visit.date|date:"d.m.Y" }}
+
+                        {% if item.assessment.visit.lesson_number %}
+
+                            <br>
+
+                            {{ item.assessment.visit.lesson_label }}
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="teacher-history-subject">
+
+                            {{ item.assessment.visit.subject }}
+
+                        </div>
+
+
+                        <div class="teacher-history-meta">
+
+                            {% if item.assessment.visit.group %}
+                                {{ item.assessment.visit.group }} ·
+                            {% endif %}
+
+                            {{ item.assessment.visit.get_format_display }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="teacher-history-score">
+
+                        {{ item.percent }}%
+
+                        <span>
+
+                            {{ item.score }}
+                            /
+                            {{ item.max_score }}
+
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span
+                            class="
+                                level-badge
+                                {{ item.level_key }}
+                            "
+                        >
+
+                            {{ item.level_name }}
+
+                        </span>
+
+                    </div>
+
+
+                </a>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="monitoring-empty">
+
+                У преподавателя пока нет
+                завершённых оцениваний.
+
+            </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+</main>
+
+{% endblock %}

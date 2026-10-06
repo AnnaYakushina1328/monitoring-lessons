@@ -24,19 +24,29 @@ def is_expert(user):
 
 def can_create_visit(user):
     """
-    Планировать посещения может
-    администратор / superuser.
+    Администратор и методист могут
+    планировать и администрировать посещения.
     """
-    return is_admin(user)
+
+    return (
+        is_admin(user)
+        or is_methodist(user)
+    )
 
 
 def can_view_visit(user, visit):
     """
-    Администратор и методист видят все посещения.
-    Эксперт — только те, куда он назначен.
+    Администратор и методист видят
+    все посещения.
+
+    Эксперт видит только те посещения,
+    куда он назначен.
     """
 
-    if is_admin(user) or is_methodist(user):
+    if (
+        is_admin(user)
+        or is_methodist(user)
+    ):
         return True
 
     if is_expert(user):
@@ -49,33 +59,47 @@ def can_view_visit(user, visit):
 
 def can_edit_assessment(user, visit):
     """
-    Методист имеет только просмотр.
-
     Заполнять чек-лист могут:
+
     - администратор;
-    - назначенный эксперт.
+    - методист, назначенный на посещение;
+    - эксперт, назначенный на посещение.
     """
 
     if is_admin(user):
         return True
 
+
+    if is_methodist(user):
+
+        return visit.methodists.filter(
+            pk=user.pk
+        ).exists()
+
+
     if is_expert(user):
+
         return visit.auditors.filter(
             pk=user.pk
         ).exists()
+
 
     return False
 
 
 def visible_visits_for(user):
     """
-    Возвращает только те посещения,
-    которые пользователь имеет право видеть.
+    Администратор и методист видят все
+    посещения.
+
+    Эксперт видит только назначенные ему.
     """
 
     from visits.models import Visit
 
+
     queryset = Visit.objects.all()
+
 
     if (
         is_admin(user)
@@ -83,9 +107,26 @@ def visible_visits_for(user):
     ):
         return queryset
 
+
     if is_expert(user):
+
         return queryset.filter(
             auditors=user
         ).distinct()
 
+
     return queryset.none()
+
+
+
+def can_view_monitoring(user):
+    """
+    Сводный мониторинг доступен:
+    - администратору;
+    - методисту.
+    """
+
+    return (
+        is_admin(user)
+        or is_methodist(user)
+    )
