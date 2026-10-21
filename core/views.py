@@ -1,4 +1,4 @@
-﻿from collections import defaultdict
+from collections import defaultdict
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -757,3 +757,61 @@ def teacher_monitoring(
             "dynamics": dynamics,
         },
     )
+
+
+@login_required
+def diagnostics(request):
+    if not can_view_monitoring(request.user):
+        raise PermissionDenied
+
+    # Only completed assessments. Compare different templates by percentage.
+    assessments = list(
+        Assessment.objects.filter(status=Assessment.Status.COMPLETED)
+        .select_related("template", "visit", "visit__teacher")
+        .prefetch_related(
+            "answers__teacher_option", "answers__student_option",
+            "template__sections__criteria__options",
+        )
+    )
+    selected_code = request.GET.get("checklist", "all")
+    if selected_code != "all":
+        assessments = [a for a in assessments if a.template.code == selected_code]
+
+    statistics = {}
+    for a in assessments:
+        answers = {answer.criterion_id: answer for answer in a.answers.all()}
+        for section in a.template.sections.all():
+            score = 0
+            maximum = 0
+            for criterion in section.criteria.all():
+                opts = list(criterion.options.all())
+                teacher_max = max((o.score for o in opts if o.side == "teacher"), default=0)
+                student_max = max((o.score for o in opts if o.side == "student"), default=0)
+                maximum += teacher_max + student_max
+                answer = answers.get(criterion.pk)
+                if answer:
+                    score += (answer.teacher_option.score if answer.teacher_option else 0)
+                    score += (answer.student_option.score if answer.student_option else 0)
+            if maximum == 0:
+                continue
+            # Section number provides stable comparison across checklist types;
+            # use section names from real templates, never fabricated labels.
+            item = statistics.setdefault(section.order, {
+                "order": section.order, "title": section.title,
+                "score": 0, "maximum": 0, "count": 0,
+            })
+            item["score"] += score
+            item["maximum"] += maximum
+            item["count"] += 1
+
+    sections = sorted(statistics.values(), key=lambda item: item["order"])
+    for item in sections:
+        item["percent"] = round(item["score"] * 100 / item["maximum"], 1)
+        item["width"] = min(100, max(0, item["percent"]))
+
+    codes = sorted({a.template.code for a in Assessment.objects.filter(
+        status=Assessment.Status.COMPLETED).select_related("template")})
+    return render(request, "core/diagnostics.html", {
+        "sections": sections, "total": len(assessments),
+        "selected_code": selected_code, "codes": codes,
+    })

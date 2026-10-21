@@ -1,9 +1,10 @@
-﻿from django.urls import path
+from django.urls import path
 
 from .views import (
     home,
     monitoring,
     teacher_monitoring,
+    diagnostics,
 )
 
 
@@ -11,6 +12,7 @@ app_name = "core"
 
 
 urlpatterns = [
+    path("diagnostics/", diagnostics, name="diagnostics"),
 
     path(
         "",
