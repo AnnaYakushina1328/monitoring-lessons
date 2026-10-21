@@ -1,4 +1,6 @@
-﻿def is_admin(user):
+from visits.models import Visit
+
+def is_admin(user):
     return (
         user.is_authenticated
         and (
@@ -34,6 +36,32 @@ def can_create_visit(user):
     )
 
 
+
+def is_teacher(user):
+    return (
+        user.is_authenticated
+        and user.role == "teacher"
+    )
+
+
+def can_teacher_view_result(user, visit):
+    if not is_teacher(user):
+        return False
+
+    if visit.teacher.user_id != user.pk:
+        return False
+
+    if visit.status != Visit.Status.COMPLETED:
+        return False
+
+    from checklists.models import Assessment
+
+    return Assessment.objects.filter(
+        visit=visit,
+        status=Assessment.Status.COMPLETED,
+    ).exists()
+
+
 def can_view_visit(user, visit):
     """
     Администратор и методист видят
@@ -53,6 +81,9 @@ def can_view_visit(user, visit):
         return visit.auditors.filter(
             pk=user.pk
         ).exists()
+
+    if can_teacher_view_result(user, visit):
+        return True
 
     return False
 
@@ -114,6 +145,15 @@ def visible_visits_for(user):
             auditors=user
         ).distinct()
 
+
+    if is_teacher(user):
+        from checklists.models import Assessment
+
+        return queryset.filter(
+            teacher__user=user,
+            status=Visit.Status.COMPLETED,
+            assessment__status=Assessment.Status.COMPLETED,
+        )
 
     return queryset.none()
 

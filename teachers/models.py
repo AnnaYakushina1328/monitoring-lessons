@@ -1,7 +1,16 @@
-﻿from django.db import models
+from django.db import models
 
 
 class Teacher(models.Model):
+    user = models.OneToOneField(
+        "accounts.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="teacher_profile",
+        verbose_name="Учётная запись",
+        limit_choices_to={"role": "teacher"},
+    )
     full_name = models.CharField(
         "ФИО",
         max_length=255,

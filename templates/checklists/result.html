@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 
@@ -577,6 +577,47 @@
     {% endif %}
 
 
+
+    {% if assessment.status == "completed" %}
+<section class="panel" style="margin-top:24px;padding:24px">
+    <h2>Ознакомление с результатом</h2>
+    {% if acknowledgement %}
+        <p><strong>{{ acknowledgement.get_decision_display }}</strong></p>
+        <p>Дата: {{ acknowledgement.created_at|date:"d.m.Y H:i" }}</p>
+        {% if acknowledgement.comment %}
+            <p><strong>Причина несогласия:</strong> {{ acknowledgement.comment }}</p>
+        {% endif %}
+    {% elif is_teacher_result %}
+        <form method="post" action="{% url 'checklists:acknowledge' visit.id %}">
+            {% csrf_token %}
+            <p><label><input type="radio" name="decision" value="agree" required> Ознакомлен, согласен</label></p>
+            <p><label><input type="radio" name="decision" value="disagree"> Ознакомлен, не согласен</label></p>
+            <div id="disagreement-fields" hidden>
+                <label for="teacher-comment">Причина несогласия</label>
+                <textarea id="teacher-comment" name="comment" maxlength="3000" rows="3" style="display:block;width:100%;margin:12px 0"></textarea>
+            </div>
+            <button class="button" type="submit">Подтвердить ознакомление</button>
+        </form>
+        <script>
+        (() => {
+            const radios = document.querySelectorAll('input[name="decision"]');
+            const fields = document.getElementById('disagreement-fields');
+            const comment = document.getElementById('teacher-comment');
+            function update() {
+                const selected = document.querySelector('input[name="decision"]:checked');
+                const disagree = selected && selected.value === 'disagree';
+                fields.hidden = !disagree;
+                comment.required = Boolean(disagree);
+            }
+            radios.forEach(radio => radio.addEventListener('change', update));
+            update();
+        })();
+        </script>
+    {% else %}
+        <p>Преподаватель пока не ознакомился с результатом</p>
+    {% endif %}
+</section>
+{% endif %}
 
     <div class="result-actions">
 

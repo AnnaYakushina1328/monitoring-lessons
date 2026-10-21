@@ -1,4 +1,4 @@
-﻿from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -7,6 +7,7 @@ class User(AbstractUser):
         ADMIN = "admin", "Администратор"
         METHODIST = "methodist", "Методист"
         EXPERT = "expert", "Эксперт"
+        TEACHER = "teacher", "Преподаватель"
 
     role = models.CharField(
         "Роль",

@@ -1,4 +1,4 @@
-﻿from django.contrib import admin
+from django.contrib import admin
 
 from .models import Teacher
 
@@ -7,6 +7,7 @@ from .models import Teacher
 class TeacherAdmin(admin.ModelAdmin):
     list_display = (
         "full_name",
+        "user",
         "position",
         "is_active",
         "updated_at",
@@ -19,9 +20,11 @@ class TeacherAdmin(admin.ModelAdmin):
 
     search_fields = (
         "full_name",
+        "user",
         "position",
     )
 
-    ordering = ("full_name",)
+    ordering = ("full_name",
+        "user",)
 
     list_per_page = 50

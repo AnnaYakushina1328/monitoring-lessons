@@ -1,4 +1,4 @@
-﻿from django.contrib import messages
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
@@ -720,6 +720,22 @@ def assessment_result(
 
         "assessment": assessment,
 
+        "acknowledgement": (
+            __import__(
+                "checklists.models",
+                fromlist=["AssessmentAcknowledgement"]
+            ).AssessmentAcknowledgement.objects.filter(
+                assessment=assessment
+            ).first()
+        ),
+
+        "is_teacher_result": (
+            __import__(
+                "core.permissions",
+                fromlist=["can_teacher_view_result"]
+            ).can_teacher_view_result(request.user, visit)
+        ),
+
         "sections": sections,
 
         "level_scale": (
@@ -1043,4 +1059,78 @@ def checklist_section(
         request,
         "checklists/section.html",
         context,
+    )
+
+
+@login_required
+def acknowledge_result(request, visit_id):
+    if request.method != "POST":
+        from django.http import HttpResponseNotAllowed
+        return HttpResponseNotAllowed(["POST"])
+
+    from django.db import IntegrityError
+    from .models import AssessmentAcknowledgement
+    from core.permissions import can_teacher_view_result
+
+    visit = get_object_or_404(
+        Visit.objects.select_related("teacher"),
+        pk=visit_id,
+    )
+
+    if not can_teacher_view_result(request.user, visit):
+        raise PermissionDenied
+
+    assessment = get_object_or_404(
+        Assessment,
+        visit=visit,
+        status=Assessment.Status.COMPLETED,
+    )
+
+    decision = request.POST.get("decision", "")
+    comment = request.POST.get("comment", "").strip()
+
+    if decision not in (
+        AssessmentAcknowledgement.Decision.AGREE,
+        AssessmentAcknowledgement.Decision.DISAGREE,
+    ):
+        return HttpResponseBadRequest("Invalid decision")
+
+    if decision == AssessmentAcknowledgement.Decision.DISAGREE:
+        if not comment:
+            messages.error(
+                request,
+                "??????? ??????? ??????????."
+            )
+            return redirect(
+                "checklists:result",
+                visit_id=visit.pk,
+            )
+    else:
+        comment = ""
+
+    if len(comment) > 3000:
+        return HttpResponseBadRequest("Comment is too long")
+
+    try:
+        with transaction.atomic():
+            AssessmentAcknowledgement.objects.create(
+                assessment=assessment,
+                user=request.user,
+                decision=decision,
+                comment=comment,
+            )
+    except IntegrityError:
+        messages.warning(
+            request,
+            "???????????? ??? ????????????."
+        )
+    else:
+        messages.success(
+            request,
+            "???????????? ? ??????????? ?????????."
+        )
+
+    return redirect(
+        "checklists:result",
+        visit_id=visit.pk,
     )

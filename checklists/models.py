@@ -1,4 +1,4 @@
-﻿from django.conf import settings
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -389,3 +389,38 @@ class AssessmentAnswer(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+
+class AssessmentAcknowledgement(models.Model):
+    class Decision(models.TextChoices):
+        AGREE = "agree", "Ознакомлен, согласен"
+        DISAGREE = "disagree", "Ознакомлен, не согласен"
+
+    assessment = models.OneToOneField(
+        Assessment,
+        on_delete=models.CASCADE,
+        related_name="acknowledgement",
+        verbose_name="??????????",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        verbose_name="?????????????",
+    )
+    decision = models.CharField(
+        "???????",
+        max_length=20,
+        choices=Decision.choices,
+    )
+    comment = models.TextField(
+        "??????????? ?????????????",
+        blank=True,
+    )
+    created_at = models.DateTimeField(
+        "???? ????????????",
+        auto_now_add=True,
+    )
+
+    class Meta:
+        verbose_name = "???????????? ? ???????????"
+        verbose_name_plural = "???????????? ? ????????????"

@@ -1,4 +1,5 @@
-﻿from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render
 
@@ -7,6 +8,8 @@ from .models import Teacher
 
 @login_required
 def teacher_list(request):
+    if request.user.role == "teacher":
+        raise PermissionDenied
     query = request.GET.get("q", "").strip()
 
     teachers = Teacher.objects.filter(

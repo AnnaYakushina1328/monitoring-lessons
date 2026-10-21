@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 
 <!DOCTYPE html>
 
@@ -57,9 +57,11 @@
                 Посещения
             </a>
 
-            <a href="{% url 'teachers:list' %}">
+            {% if request.user.role != "teacher" %} {# TEACHER_NAV_START #}
+<a href="{% url 'teachers:list' %}">
                 Преподаватели
             </a>
+{% endif %}
 
 
             {% if request.user.is_superuser or request.user.role == "admin" or request.user.role == "methodist" %}
