@@ -36,3 +36,7 @@ Thumbs.db
 # Private project data
 data/private/
 data/import/
+
+.env.prod
+
+!.env.prod.example

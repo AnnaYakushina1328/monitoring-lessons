@@ -1,4 +1,4 @@
-﻿import os
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -112,3 +112,53 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
+
+# PRODUCTION_SECURITY_CONFIG_V1
+
+from django.core.exceptions import ImproperlyConfigured
+
+if not DEBUG and SECRET_KEY in (
+    "",
+    "unsafe-development-key",
+    "change-me",
+):
+    raise ImproperlyConfigured(
+        "Set a secure DJANGO_SECRET_KEY for production."
+    )
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "DJANGO_CSRF_TRUSTED_ORIGINS", ""
+    ).split(",")
+    if origin.strip()
+]
+
+if os.getenv("DJANGO_TRUST_PROXY_SSL_HEADER", "0") == "1":
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO",
+        "https",
+    )
+
+SECURE_SSL_REDIRECT = (
+    os.getenv("DJANGO_SECURE_SSL_REDIRECT", "0") == "1"
+)
+
+SESSION_COOKIE_SECURE = (
+    os.getenv("DJANGO_SECURE_COOKIES", "0") == "1"
+)
+
+CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+SECURE_HSTS_SECONDS = int(
+    os.getenv("DJANGO_HSTS_SECONDS", "0")
+)
+
+# Static files are served by WhiteNoise in production.
+if not DEBUG:
+    MIDDLEWARE.insert(
+        1,
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    )
