@@ -809,9 +809,53 @@ def diagnostics(request):
         item["percent"] = round(item["score"] * 100 / item["maximum"], 1)
         item["width"] = min(100, max(0, item["percent"]))
 
+    # TEACHER_DYNAMICS_ALL_V2: all teachers, including those with no scores.
+    # Each completed visit is normalized by its own checklist maximum.
+    from collections import defaultdict
+    from teachers.models import Teacher
+
+    grouped = defaultdict(list)
+    for a in assessments:
+        if a.visit.status != Visit.Status.COMPLETED or not (a.template.max_score or 0):
+            continue
+        grouped[a.visit.teacher_id].append(a)
+
+    teacher_chart_rows = []
+    for teacher in Teacher.objects.all().order_by('full_name', 'pk'):
+        items = sorted(
+            grouped.get(teacher.pk, []),
+            key=lambda a: (a.visit.date, a.visit.lesson_number or 0, a.visit_id),
+        )
+        points = []
+        for index, a in enumerate(items[:3], start=1):
+            percent = round(100 * a.total_score / a.template.max_score, 1)
+            points.append({
+                'number': index,
+                'visit_id': a.visit_id,
+                'date': a.visit.date,
+                'percent': percent,
+                'width': min(100, max(0, percent)),
+                'score': a.total_score,
+                'maximum': a.template.max_score,
+            })
+        cells = [points[i] if i < len(points) else None for i in range(3)]
+        delta = round(points[-1]['percent'] - points[0]['percent'], 1) if len(points) > 1 else None
+        teacher_chart_rows.append({
+            'teacher': teacher,
+            'cells': cells,
+            'count': len(items),
+            'delta': delta,
+            'extra': max(0, len(items) - 3),
+        })
+    chart_teacher_total = len(teacher_chart_rows)
+    chart_teacher_with_scores = sum(bool(row['count']) for row in teacher_chart_rows)
+
     codes = sorted({a.template.code for a in Assessment.objects.filter(
         status=Assessment.Status.COMPLETED).select_related("template")})
     return render(request, "core/diagnostics.html", {
         "sections": sections, "total": len(assessments),
         "selected_code": selected_code, "codes": codes,
+        "teacher_chart_rows": teacher_chart_rows,
+        "chart_teacher_total": chart_teacher_total,
+        "chart_teacher_with_scores": chart_teacher_with_scores,
     })
